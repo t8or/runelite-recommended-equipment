@@ -1,6 +1,7 @@
 .gradle
 bin
 build
+jars
 .idea/
 .project
 .settings/

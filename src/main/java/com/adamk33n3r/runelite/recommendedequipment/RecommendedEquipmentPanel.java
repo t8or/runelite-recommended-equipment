@@ -28,6 +28,8 @@ import java.util.List;
 public class RecommendedEquipmentPanel extends PluginPanel {
     @Inject
     private RecEquipClient recEquipClient;
+    @Inject
+    private RecommendedEquipmentPlugin plugin;
 
     @Getter
     private final MultiplexingPluginPanel muxer = new MultiplexingPluginPanel(this) {
@@ -82,7 +84,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 //            }
 //            i++;
 //        }
-        this.search.putClientProperty(FlatClientProperties.STYLE_CLASS, "rounded5");
+        Util.addStyleClass(this.search, "rounded5");
         this.search.setIcon(IconTextField.Icon.SEARCH);
         this.search.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
         this.search.setBackground(ColorScheme.DARKER_GRAY_COLOR);
@@ -107,7 +109,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         filterArea.add(this.search);
 
         JPanel filterList = new JPanel();
-        filterList.putClientProperty(FlatClientProperties.STYLE_CLASS, "rounded5");
+        Util.addStyleClass(filterList, "rounded5");
         filterList.setBackground(ColorScheme.DARKER_GRAY_COLOR);
         filterList.add(new JLabel("Filter list"));
         filterList.add(makeFilterButton("Slayer"));
@@ -122,7 +124,6 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 //        topPanel.add(reloadButton, BorderLayout.SOUTH);
 
         this.mainPanel = new JPanel();
-        this.mainPanel.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 10, 0), new HorizontalRuleBorder(10)));
         this.mainPanel.setLayout(new DynamicGridLayout(0, 1, 0, 5));
         this.mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -133,10 +134,13 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         btn.addActionListener((ev) -> {
             reloadList(true);
         });
-        northPanel.add(btn, BorderLayout.SOUTH);
+        this.add(btn, BorderLayout.SOUTH);
 
         JScrollPane scrollPane = new JScrollPane(northPanel);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        // For the horizontal rule border
+        scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
+        scrollPane.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 10, 0), new HorizontalRuleBorder(10)));
         this.add(scrollPane, BorderLayout.CENTER);
 
         this.reloadList(false);
@@ -148,7 +152,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
             List<Activity> activities = this.recEquipClient.downloadActivities(forceDownload);
             Util.runWithLAF(() -> {
                 activities.stream()
-                    .map((activity) -> new ActivityListItem(activity, this.muxer))
+                    .map((activity) -> new ActivityListItem(activity, this.plugin, this.muxer))
                     .forEach(this.allActivityListItems::add);
                 this.onSearchBarChanged(this.search.getText());
                 return null;
@@ -162,7 +166,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         JToggleButton jToggleButton = new JToggleButton(label);
         jToggleButton.setPreferredSize(new Dimension(50, 20));
         jToggleButton.setFont(jToggleButton.getFont().deriveFont(12f));
-        jToggleButton.putClientProperty(FlatClientProperties.STYLE_CLASS, "filter");
+        Util.addStyleClass(jToggleButton, "filter");
         return jToggleButton;
     }
 

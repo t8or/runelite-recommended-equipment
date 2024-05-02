@@ -43,10 +43,10 @@ public class ActivityListItem extends ClickablePanel {
 		OFF_STAR = new ImageIcon(offStar);
 	}
 
-    public ActivityListItem(Activity activity, MultiplexingPluginPanel muxer) {
+    public ActivityListItem(Activity activity, RecommendedEquipmentPlugin plugin, MultiplexingPluginPanel muxer) {
         super(() -> {
             System.out.println("Clicked: " + activity.getName());
-            muxer.pushState(new ActivityPanel(activity, muxer));
+            muxer.pushState(new ActivityPanel(activity, plugin, muxer));
         }, ColorScheme.DARKER_GRAY_HOVER_COLOR, ColorScheme.MEDIUM_GRAY_COLOR, ColorScheme.DARK_GRAY_COLOR);
         Util.addStyleClass(this, "activity");
         this.activity = activity;

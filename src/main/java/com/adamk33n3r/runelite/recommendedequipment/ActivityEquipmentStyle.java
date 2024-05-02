@@ -1,6 +1,7 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -62,4 +63,22 @@ public class ActivityEquipmentStyle {
      */
     private List<ActivitySlotTier> ring;
     private List<ActivitySlotTier> special;
+
+    public List<Pair<String, List<ActivitySlotTier>>> getSlots() {
+        // TODO: should probably be a scraper data change
+        return List.of(
+            Pair.of("Head", head),
+            Pair.of("Neck", neck),
+            Pair.of("Cape", cape),
+            Pair.of("Body", body),
+            Pair.of("Legs", legs),
+            Pair.of("Weapon", weapon),
+            Pair.of("Shield", shield),
+            Pair.of("Ammo", ammo),
+            Pair.of("Hands", hands),
+            Pair.of("Feet", feet),
+            Pair.of("Ring", ring),
+            Pair.of("Special", special)
+        );
+    }
 }

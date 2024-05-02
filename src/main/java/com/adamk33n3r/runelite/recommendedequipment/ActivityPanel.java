@@ -5,17 +5,18 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.laf.RuneLiteLAF;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class ActivityPanel extends PluginPanel {
     private final Activity activity;
     private final MultiplexingPluginPanel muxer;
+    private final RecommendedEquipmentPlugin plugin;
 
-    public ActivityPanel(Activity activity, MultiplexingPluginPanel muxer) {
+    public ActivityPanel(Activity activity, RecommendedEquipmentPlugin plugin, MultiplexingPluginPanel muxer) {
         super(false);
         this.activity = activity;
         this.muxer = muxer;
+        this.plugin = plugin;
 
         this.setLayout(new BorderLayout());
     }
@@ -42,6 +43,15 @@ public class ActivityPanel extends PluginPanel {
             JPanel stylePanel = new JPanel();
             Util.addStyleClass(stylePanel, "activity");
             stylePanel.setLayout(new GridLayout(0, 1));
+            JButton selectAsActive = new JButton("Select as Active");
+            selectAsActive.addActionListener(e -> {
+                System.out.println("Setting active style: " + style.getName());
+                this.plugin.setActivityEquipmentStyle(style);
+                if (this.plugin.getBankTab().isActive()) {
+                    this.plugin.getBankTab().resetTab();
+                }
+            });
+            stylePanel.add(selectAsActive);
             stylePanel.add(new JLabel(style.getName()), BorderLayout.WEST);
             style.getWeapon().forEach(equipment -> {
                 JPanel equipmentPanel = new JPanel(new GridLayout(1, 0));
