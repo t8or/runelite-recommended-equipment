@@ -1,16 +1,13 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
-import com.formdev.flatlaf.FlatClientProperties;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.MultiplexingPluginPanel;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.laf.RuneLiteLAF;
-import net.runelite.client.util.SwingUtil;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -23,6 +20,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Singleton
@@ -158,13 +156,17 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         try {
             this.allActivityListItems.clear();
             List<Activity> activities = this.recEquipClient.downloadActivities(forceDownload);
-            Util.runWithLAF(() -> {
+//            Util.runWithLAF(() -> {
                 activities.stream()
-                    .map((activity) -> new ActivityListItem(activity, this.plugin, this.muxer))
+                    .sorted(Comparator.comparing(Activity::getName))
+                    .map((activity) -> {
+                        activity.setFavorite(this.plugin.isFavorite(activity));
+                        return new ActivityListItem(activity, this.plugin, this.muxer);
+                    })
                     .forEach(this.allActivityListItems::add);
                 this.onSearchBarChanged(this.search.getText());
-                return null;
-            });
+//                return null;
+//            });
         } catch (IOException e) {
             e.printStackTrace();
         }

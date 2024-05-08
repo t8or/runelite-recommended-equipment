@@ -33,6 +33,8 @@ public class ActivityListItem extends ClickablePanel {
     @Getter
     private final Activity activity;
 
+    private final RecommendedEquipmentPlugin plugin;
+
     static {
 		BufferedImage onStar = ImageUtil.loadImageResource(ConfigPlugin.class, "star_on.png");
 		ON_STAR = new ImageIcon(onStar);
@@ -49,85 +51,56 @@ public class ActivityListItem extends ClickablePanel {
             System.out.println("Clicked: " + activity.getName());
             muxer.pushState(new ActivityPanel(activity, plugin, muxer));
         }, ColorScheme.DARKER_GRAY_HOVER_COLOR, ColorScheme.MEDIUM_GRAY_COLOR, ColorScheme.DARK_GRAY_COLOR);
-        Util.addStyleClass(this, "activity");
         this.activity = activity;
-        this.setLayout(new BorderLayout(5, 5));
-        this.setPreferredSize(new Dimension(0, 30));
+        this.plugin = plugin;
+        Util.addStyleClass(this, "activity");
+        this.setToolTipText(activity.getName());
         this.rebuild();
     }
 
     public void rebuild() {
         this.removeAll();
-        for (MouseAdapter listener : this.getListeners(MouseAdapter.class)) {
-            this.removeMouseListener(listener);
-        }
-        JPanel text = new JPanel(new BorderLayout());
-        this.add(text, BorderLayout.CENTER);
-        text.setOpaque(false);
-        // left.setBackground(ColorScheme.DARKER_GRAY_HOVER_COLOR);
-        JLabel label = new JLabel(this.activity.getName());
-//        label.setMaximumSize(new Dimension(20, 0));
-//        label.setPreferredSize(new Dimension(100, 20));
-//        label.setOpaque(true);
-//        label.setBackground(Color.GREEN);
-        label.setHorizontalAlignment(SwingConstants.LEFT);
-        label.setAlignmentX(LEFT_ALIGNMENT);
-        text.add(label, BorderLayout.CENTER);
+        JLabel name = new JLabel(this.activity.getName());
+        name.setHorizontalAlignment(SwingConstants.LEFT);
+        name.setAlignmentX(LEFT_ALIGNMENT);
 
         JLabel category = new JLabel(this.activity.getCategory());
-//        category.setOpaque(true);
-//        category.setBackground(Color.CYAN);
         if (this.activity.getCategory() == null) {
             category.setText("\u00A0");
         }
-        text.add(category, BorderLayout.EAST);
-
-        JPanel right = new JPanel(new DynamicGridLayout(1, 0));
-        right.setOpaque(false);
-//        right.setBackground(Color.RED);
-        // right.setBackground(ColorScheme.BRAND_ORANGE);
-//        category.setText("\u00A0");
-//        category.setHorizontalAlignment(SwingConstants.RIGHT);
-        // category.setBackground(ColorScheme.GRAND_EXCHANGE_ALCH);
-        // category.setOpaque(true);
-        // UIManager.put("Button.toolbar.pressedBackground", Color.PINK);
-//        JButton test = new JButton("Test");
-        // test.getUI().uninstallUI(test);
-        // test.getUI().installUI(test);
-        // UIManager.put("Button.toolbar.pressedBackground", prevColor);
-//        test.putClientProperty("JButton.buttonType", "borderless");
-        // FlatButtonUI buttonUI = FlatButtonUI.createUI(test);
-        // test.setUI(buttonUI);
-        // test.setUI(new BasicButtonUI() {
-        //     @Override
-        //     public void paintButtonPressed(Graphics g, AbstractButton b) {
-        //         paintText(g, b, b.getBounds(), b.getText());
-        //         g.setColor(Color.RED.brighter());
-        //         g.fillRect(0, 0, b.getSize().width, b.getSize().height);
-        //     }
-        // });
-
-//        Color prevColor = (Color)UIManager.get("ToggleButton.toolbar.pressBackground");
-//        UIManager.put("ToggleButton.toolbar.pressedBackground", ColorScheme.DARKER_GRAY_HOVER_COLOR);
         JToggleButton favoriteBtn = new JToggleButton(OFF_STAR);
         favoriteBtn.setSelected(this.activity.isFavorite());
-        // see if i can make my own style sheet so that im not modifying the defaults? I'm not sure how UIManager works. It didn't seem to change the buttons in the config panel.
-        // favoriteBtn.putClientProperty("JButton.buttonType", "borderless");
 		favoriteBtn.setSelectedIcon(ON_STAR);
 		SwingUtil.removeButtonDecorations(favoriteBtn);
 		SwingUtil.addModalTooltip(favoriteBtn, "Unfavorite", "Favorite");
 		favoriteBtn.setPreferredSize(new Dimension(21, 21));
 		favoriteBtn.addActionListener(e -> {
-			// pluginListPanel.savePinnedPlugins();
-			// pluginListPanel.refresh();
+            this.activity.setFavorite(!this.activity.isFavorite());
+            this.plugin.saveFavorites(this.activity);
             System.out.println("Pin button clicked");
 		});
-//        favoriteBtn.setBackground(Color.YELLOW);
-        // pinButton.setBackground(ColorScheme.GRAND_EXCHANGE_ALCH);
-//        UIManager.put("ToggleButton.toolbar.pressedBackground", prevColor);
 
-        right.add(favoriteBtn);
-        right.setAlignmentX(RIGHT_ALIGNMENT);
-        this.add(right, BorderLayout.EAST);
+        GroupLayout layout = new GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup()
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(name, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+                    .addComponent(category)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(favoriteBtn, 21, 21, 21))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup()
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                        .addComponent(name, 16, 16, 16)
+                        .addComponent(favoriteBtn, 16, 16, 16)
+                        .addComponent(category))
+                    .addContainerGap())
+        );
     }
 }

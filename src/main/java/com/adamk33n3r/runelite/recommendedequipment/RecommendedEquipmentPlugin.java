@@ -20,7 +20,7 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 
 import java.awt.image.BufferedImage;
-import java.util.Properties;
+import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
@@ -34,6 +34,8 @@ public class RecommendedEquipmentPlugin extends Plugin
 	private EventBus eventBus;
 	@Inject
 	private ClientToolbar clientToolbar;
+	@Inject
+	private ConfigManager configManager;
 
 	@Inject
 	private RecommendedEquipmentConfig config;
@@ -83,5 +85,19 @@ public class RecommendedEquipmentPlugin extends Plugin
 	RecommendedEquipmentConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(RecommendedEquipmentConfig.class);
+	}
+
+	public boolean isFavorite(Activity activity) {
+		return this.config.favorites().contains(activity.getName());
+	}
+
+	public void saveFavorites(Activity activity) {
+		Set<String> favorites = this.config.favorites();
+		if (activity.isFavorite()) {
+			favorites.add(activity.getName());
+		} else {
+			favorites.remove(activity.getName());
+		}
+		this.configManager.setConfiguration(RecommendedEquipmentConfig.CONFIG_GROUP, "favorites", favorites);
 	}
 }
