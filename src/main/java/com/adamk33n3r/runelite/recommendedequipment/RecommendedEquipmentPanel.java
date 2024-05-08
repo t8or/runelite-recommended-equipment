@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.MultiplexingPluginPanel;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
@@ -19,8 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 @Singleton
@@ -49,6 +49,8 @@ public class RecommendedEquipmentPanel extends PluginPanel {
     private JScrollPane scrollPane;
 
     private static final Splitter SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
+    private JPanel filterList;
+    private Set<String> selectedCategories = new HashSet<>();
 
     public RecommendedEquipmentPanel() {
         super(false);
@@ -60,32 +62,13 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         this.removeAll();
 
         JPanel topPanel = new JPanel();
-//        topPanel.setBorder(new EmptyBorder(10, 10, 0, 10));
         topPanel.setLayout(new BorderLayout(0, BORDER_OFFSET));
         this.add(topPanel, BorderLayout.NORTH);
 
-        JPanel filterArea = new JPanel(new GridLayout(2, 1, 5, 5));
+        JPanel filterArea = new JPanel(new DynamicGridLayout(2, 1, 5, 5));
         topPanel.add(filterArea, BorderLayout.CENTER);
 
         this.search = new IconTextField();
-//        int i = 0;
-//        for (Component comp : search.getComponents()) {
-//            System.out.println(comp);
-//            JComponent jcomp = (JComponent) comp;
-//            ((JComponent) comp).putClientProperty(FlatClientProperties.STYLE_CLASS, "rounded15");
-//            ((JComponent) comp).putClientProperty(FlatClientProperties.COMPONENT_ROUND_RECT, true);
-//            if (i == 1) {
-//                System.out.println(jcomp.getComponent(0));
-//                JComponent jTextField = (JComponent) jcomp.getComponent(0);
-////                jTextField.putClientProperty(FlatClientProperties.STYLE_CLASS, "rounded15");
-//                jTextField.putClientProperty(FlatClientProperties.COMPONENT_ROUND_RECT, true);
-//                jTextField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
-//
-////                jcomp.getComponent(0).setBackground(ColorScheme.GRAND_EXCHANGE_ALCH);
-//                jTextField.setOpaque(true);
-//            }
-//            i++;
-//        }
         Util.addStyleClass(this.search, "rounded5");
         this.search.setIcon(IconTextField.Icon.SEARCH);
         this.search.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
@@ -110,33 +93,25 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 //        CATEGORY_TAGS.forEach(searchBar.getSuggestionListModel()::addElement);
         filterArea.add(this.search);
 
-        JPanel filterList = new JPanel();
-        Util.addStyleClass(filterList, "rounded5");
-        filterList.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        filterList.add(new JLabel("Filter list"));
-        filterList.add(makeFilterButton("Slayer"));
-        filterList.add(makeFilterButton("Minigame"));
-        filterList.add(makeFilterButton("World"));
-        filterArea.add(filterList);
-
-//        JButton reloadButton = new JButton("Reload");
-//        reloadButton.addActionListener((ev) -> {
-//            Util.runWithLAF(this::rebuild);
-//        });
-//        topPanel.add(reloadButton, BorderLayout.SOUTH);
+        this.filterList = new JPanel();
+        this.filterList.setLayout(new WrapLayout(FlowLayout.LEFT, 2, 2));
+        this.filterList.setBorder(new EmptyBorder(4, 4, 4, 4));
+        Util.addStyleClass(this.filterList, "rounded5");
+        this.filterList.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        this.filterList.add(new JLabel("Filter list"));
+        filterArea.add(this.filterList);
 
         this.mainPanel = new JPanel();
         this.mainPanel.setLayout(new GridLayout(0, 1, 0, 5));
         this.mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         ScrollablePanel northPanel = new ScrollablePanel(new BorderLayout());
-//        northPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
         northPanel.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
         northPanel.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
         northPanel.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
         northPanel.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
         northPanel.add(this.mainPanel, BorderLayout.NORTH);
-        JButton btn = new JButton("reload");
+        JButton btn = new JButton("Reload");
         btn.addActionListener((ev) -> {
             reloadList(true);
         });
@@ -156,26 +131,40 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         try {
             this.allActivityListItems.clear();
             List<Activity> activities = this.recEquipClient.downloadActivities(forceDownload);
-//            Util.runWithLAF(() -> {
-                activities.stream()
-                    .sorted(Comparator.comparing(Activity::getName))
-                    .map((activity) -> {
-                        activity.setFavorite(this.plugin.isFavorite(activity));
-                        return new ActivityListItem(activity, this.plugin, this.muxer);
-                    })
-                    .forEach(this.allActivityListItems::add);
-                this.onSearchBarChanged(this.search.getText());
-//                return null;
-//            });
+            this.filterList.removeAll();
+            this.filterList.add(new JLabel("Filter list", Icons.FILTER, SwingConstants.LEFT));
+            activities.stream().map(Activity::getCategory).distinct().map(this::makeFilterButton).forEach(this.filterList::add);
+            activities.stream()
+                .sorted(Comparator.comparing(Activity::getName))
+                .filter((activity) -> {
+                    return this.selectedCategories.isEmpty() || Arrays.stream(this.filterList.getComponents())
+                        .filter(c -> c instanceof JToggleButton)
+                        .map(c -> (JToggleButton) c)
+                        .anyMatch(c -> c.isSelected() && c.getText().equals(activity.getCategory()));
+                })
+                .map((activity) -> {
+                    activity.setFavorite(this.plugin.isFavorite(activity));
+                    return new ActivityListItem(activity, this.plugin, this.muxer);
+                })
+                .forEach(this.allActivityListItems::add);
+            this.onSearchBarChanged(this.search.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static JToggleButton makeFilterButton(String label) {
+    private JToggleButton makeFilterButton(String label) {
         JToggleButton jToggleButton = new JToggleButton(label);
-        jToggleButton.setPreferredSize(new Dimension(50, 20));
         jToggleButton.setFont(jToggleButton.getFont().deriveFont(12f));
+        jToggleButton.setSelected(this.selectedCategories.contains(label));
+        jToggleButton.addActionListener((ev) -> {
+            if (jToggleButton.isSelected()) {
+                this.selectedCategories.add(label);
+            } else {
+                this.selectedCategories.remove(label);
+            }
+            this.reloadList(false);
+        });
         Util.addStyleClass(jToggleButton, "filter");
         return jToggleButton;
     }
