@@ -1,5 +1,6 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ public class Activity {
     private String category;
     private boolean favorite;
 
+    @SerializedName("styles")
     private List<ActivityEquipmentStyle> equipmentStyles = new ArrayList<>();
 
     public Activity(String activityName, String category, boolean favorite) {

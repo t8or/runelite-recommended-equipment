@@ -11,7 +11,6 @@ import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.util.QuantityFormatter;
 import net.runelite.client.util.Text;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -32,6 +31,7 @@ public class BankTab {
     private static final int TEXT_HEIGHT = 15;
     private static final int ITEM_HEIGHT = 32;
     private static final int ITEM_WIDTH = 36;
+    private static final int ITEM_HORIZONTAL_GAP = ITEM_HORIZONTAL_SPACING - ITEM_WIDTH;
     private static final int EMPTY_BANK_SLOT_ID = 6512;
 
     @Inject
@@ -47,7 +47,7 @@ public class BankTab {
 
     private final List<Widget> addedWidgets = new ArrayList<>();
     private final Map<Widget, ActivityItem> widgetItems = new HashMap<>();
-    private final Map<Widget, Widget> fakeToRealItem = new HashMap<>();
+    private final Map<BankWidget, BankWidget> fakeToRealItem = new HashMap<>();
 
     public void startUp() {
     }
@@ -74,6 +74,25 @@ public class BankTab {
     public void onWidgetLoaded(WidgetLoaded event) {
         if (event.getGroupId() == InterfaceID.BANK && this.recommendedEquipmentPlugin.getActivityEquipmentStyle() != null) {
             this.bankFilterButton.init();
+        }
+    }
+
+    @Subscribe
+    public void onClientTick(ClientTick clientTick) {
+        if (!bankFilterButton.isTabActive() || bankFilterButton.isHidden()) return;
+
+        net.runelite.api.Point mousePoint = client.getMouseCanvasPosition();
+        if (fakeToRealItem.isEmpty()) {
+            return;
+        }
+
+        for (BankWidget bankWidget : fakeToRealItem.keySet())
+        {
+            if (bankWidget.isPointOverWidget(mousePoint))
+            {
+                bankWidget.swap(fakeToRealItem.get(bankWidget));
+                return;
+            }
         }
     }
 
@@ -164,34 +183,10 @@ public class BankTab {
 
         Widget[] containerChildren = itemContainer.getDynamicChildren();
         this.clientThread.invokeAtTickEnd(() -> {
-//            List<BankTabItems> tabLayout = questHelper.getPluginBankTagItemsForSections(true);
             ActivityEquipmentStyle equipmentStyle = recommendedEquipmentPlugin.getActivityEquipmentStyle();
             if (equipmentStyle != null) {
                 sortBankTabItems(itemContainer, containerChildren, equipmentStyle);
             }
-
-//            int totalSectionsHeight = 0;
-//            List<Integer> itemList = new ArrayList<>();
-//            for (Widget itemWidget : containerChildren) {
-//                // Hide tab dividers
-//                if (itemWidget.getSpriteId() == SpriteID.RESIZEABLE_MODE_SIDE_PANEL_BACKGROUND || itemWidget.getText().contains("Tab")) {
-//                    itemWidget.setHidden(true);
-//                } else if (!itemWidget.isHidden() && itemWidget.getItemId() !=- -1 && itemWidget.getItemId() != EMPTY_BANK_SLOT_ID) {
-//                    itemList.add(itemWidget.getItemId());
-//                    itemWidget.setHidden(true);
-//                }
-//            }
-//            this.addSectionHeader(itemContainer, "Recommended Gear", 0);
-//            Widget testItem = createText(itemContainer, "Test Item", Color.WHITE.getRGB(), 48, 15 - 3, 50, 50);
-//            this.addedWidgets.add(testItem);
-//            Widget testItemSprite = createGraphic(itemContainer, SpriteID.COMBAT_STYLE_SWORD_SLASH, ITEM_WIDTH, ITEM_HEIGHT, 50, 15);
-//            this.addedWidgets.add(testItemSprite);
-//
-//            final Widget bankItemContainer = client.getWidget(ComponentID.BANK_ITEM_CONTAINER);
-//            if (bankItemContainer == null) return;
-//            int itemContainerHeight = bankItemContainer.getHeight();
-
-//            bankItemContainer.setScrollHeight(Math.max(totalSectionsHeight, itemContainerHeight));
         });
     }
 
@@ -217,7 +212,7 @@ public class BankTab {
         }
 
         List<String> bankItemTexts = new ArrayList<>();
-        HashMap<Integer, Widget> itemIDsAdded = new HashMap<>();
+        HashMap<Integer, BankWidget> itemIDsAdded = new HashMap<>();
 
         for (Pair<String, List<ActivitySlotTier>> bankTabItems : newLayout.getSlots())
         {
@@ -305,13 +300,20 @@ public class BankTab {
         return totalSectionsHeight + LINE_VERTICAL_SPACING + TEXT_HEIGHT;
     }
 
+    private int addTierDivider(Widget itemContainer, int totalItemsAdded, int totalSectionsHeight) {
+        int adjXOffset = ((totalItemsAdded) % (ITEMS_PER_ROW+1)) * ITEM_HORIZONTAL_SPACING + ITEM_ROW_START - ITEM_HORIZONTAL_GAP;
+        int adjYOffset = totalSectionsHeight + ((totalItemsAdded - 1) / ITEMS_PER_ROW) * ITEM_VERTICAL_SPACING;
+        addedWidgets.add(createGraphic(itemContainer, SpriteID.RESIZEABLE_MODE_SIDE_PANEL_BACKGROUND, 2, ITEM_VERTICAL_SPACING - 6, adjXOffset, adjYOffset));
+        return totalSectionsHeight;
+    }
+
     private int addSlotTabSection(Widget itemContainer,
                                   String slotName,
                                   List<ActivitySlotTier> items,
                                   List<Integer> ownedItemIDs,
                                   int totalSectionsHeight,
                                   List<String> bankItemTexts,
-                                  Map<Integer, Widget> itemIDsAdded) {
+                                  Map<Integer, BankWidget> itemIDsAdded) {
         int newHeight = totalSectionsHeight;
 
          if (items.isEmpty()) {
@@ -329,9 +331,10 @@ public class BankTab {
                                      List<ActivitySlotTier> items,
                                      List<Integer> ownedItemIDs,
                                      int totalSectionsHeight,
-                                     Map<Integer, Widget> itemIDsAdded) {
+                                     Map<Integer, BankWidget> itemIDsAdded) {
         int totalItemsAdded = 0;
         // Iterate over each tier
+        int i = 0;
         for (ActivitySlotTier slotTier : items) {
             boolean foundItem = false;
 
@@ -349,7 +352,7 @@ public class BankTab {
 
                             totalItemsAdded++;
                             ownedItemIDs.removeAll(Collections.singletonList(widget.getItemId()));
-                            itemIDsAdded.put(widget.getItemId(), widget);
+                            itemIDsAdded.put(widget.getItemId(), new BankWidget(widget));
 
                             break;
                         }
@@ -376,12 +379,12 @@ public class BankTab {
                             .filter(itemIDsAdded.keySet()::contains)
                             .collect(Collectors.toList());
 
-                        Widget realItemWidget = itemIDsAdded.get((result.get(0)));
+                        BankWidget realItemWidget = itemIDsAdded.get((result.get(0)));
 
                         fakeItemWidget = createDuplicateItem(itemContainer, item,
                             realItemWidget.getItemQuantity(), adjXOffset, adjYOffset);
 
-                        fakeToRealItem.put(fakeItemWidget, realItemWidget);
+                        fakeToRealItem.put(new BankWidget(fakeItemWidget), realItemWidget);
                     }
 
 //                    if (bankTabItem.getQuantity() > 0)
@@ -395,6 +398,13 @@ public class BankTab {
                     totalItemsAdded++;
                 }
             }
+
+            if (i < items.size() - 1) {
+                addTierDivider(itemContainer, totalItemsAdded, totalSectionsHeight);
+            }
+
+
+            i++;
         }
 
         int newHeight = totalSectionsHeight + (totalItemsAdded / ITEMS_PER_ROW) * ITEM_VERTICAL_SPACING;

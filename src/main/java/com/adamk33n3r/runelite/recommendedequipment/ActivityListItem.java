@@ -22,6 +22,7 @@ import net.runelite.client.plugins.config.ConfigPlugin;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.MultiplexingPluginPanel;
+import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.SwingUtil;
 
@@ -51,6 +52,7 @@ public class ActivityListItem extends ClickablePanel {
         Util.addStyleClass(this, "activity");
         this.activity = activity;
         this.setLayout(new BorderLayout(5, 5));
+        this.setPreferredSize(new Dimension(0, 30));
         this.rebuild();
     }
 
@@ -59,20 +61,32 @@ public class ActivityListItem extends ClickablePanel {
         for (MouseAdapter listener : this.getListeners(MouseAdapter.class)) {
             this.removeMouseListener(listener);
         }
-        JPanel left = new JPanel();
-        left.setOpaque(false);
+        JPanel text = new JPanel(new BorderLayout());
+        this.add(text, BorderLayout.CENTER);
+        text.setOpaque(false);
         // left.setBackground(ColorScheme.DARKER_GRAY_HOVER_COLOR);
         JLabel label = new JLabel(this.activity.getName());
-        left.add(label);
-        this.add(left, BorderLayout.WEST);
+//        label.setMaximumSize(new Dimension(20, 0));
+//        label.setPreferredSize(new Dimension(100, 20));
+//        label.setOpaque(true);
+//        label.setBackground(Color.GREEN);
+        label.setHorizontalAlignment(SwingConstants.LEFT);
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        text.add(label, BorderLayout.CENTER);
 
-        JPanel right = new JPanel(new DynamicGridLayout(1, 0));
-        right.setOpaque(false);
-        // right.setBackground(ColorScheme.BRAND_ORANGE);
         JLabel category = new JLabel(this.activity.getCategory());
+//        category.setOpaque(true);
+//        category.setBackground(Color.CYAN);
         if (this.activity.getCategory() == null) {
             category.setText("\u00A0");
         }
+        text.add(category, BorderLayout.EAST);
+
+        JPanel right = new JPanel(new DynamicGridLayout(1, 0));
+        right.setOpaque(false);
+//        right.setBackground(Color.RED);
+        // right.setBackground(ColorScheme.BRAND_ORANGE);
+//        category.setText("\u00A0");
 //        category.setHorizontalAlignment(SwingConstants.RIGHT);
         // category.setBackground(ColorScheme.GRAND_EXCHANGE_ALCH);
         // category.setOpaque(true);
@@ -92,7 +106,6 @@ public class ActivityListItem extends ClickablePanel {
         //         g.fillRect(0, 0, b.getSize().width, b.getSize().height);
         //     }
         // });
-        right.add(category);
 
 //        Color prevColor = (Color)UIManager.get("ToggleButton.toolbar.pressBackground");
 //        UIManager.put("ToggleButton.toolbar.pressedBackground", ColorScheme.DARKER_GRAY_HOVER_COLOR);
@@ -103,12 +116,13 @@ public class ActivityListItem extends ClickablePanel {
 		favoriteBtn.setSelectedIcon(ON_STAR);
 		SwingUtil.removeButtonDecorations(favoriteBtn);
 		SwingUtil.addModalTooltip(favoriteBtn, "Unfavorite", "Favorite");
-		favoriteBtn.setPreferredSize(new Dimension(21, 0));
+		favoriteBtn.setPreferredSize(new Dimension(21, 21));
 		favoriteBtn.addActionListener(e -> {
 			// pluginListPanel.savePinnedPlugins();
 			// pluginListPanel.refresh();
             System.out.println("Pin button clicked");
 		});
+//        favoriteBtn.setBackground(Color.YELLOW);
         // pinButton.setBackground(ColorScheme.GRAND_EXCHANGE_ALCH);
 //        UIManager.put("ToggleButton.toolbar.pressedBackground", prevColor);
 

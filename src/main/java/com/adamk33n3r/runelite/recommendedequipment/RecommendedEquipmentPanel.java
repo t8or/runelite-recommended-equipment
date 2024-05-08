@@ -10,6 +10,7 @@ import net.runelite.client.ui.MultiplexingPluginPanel;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.laf.RuneLiteLAF;
+import net.runelite.client.util.SwingUtil;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -42,9 +43,12 @@ public class RecommendedEquipmentPanel extends PluginPanel {
             System.out.println("onRemove:"+p);
         }
     };
+
+    private static final EmptyBorder VIEWPORT_BORDER = new EmptyBorder(0, 0, 0, 5);
     private final List<ActivityListItem> allActivityListItems = new ArrayList<>();
     private JPanel mainPanel;
     private IconTextField search;
+    private JScrollPane scrollPane;
 
     private static final Splitter SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
 
@@ -124,11 +128,15 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 //        topPanel.add(reloadButton, BorderLayout.SOUTH);
 
         this.mainPanel = new JPanel();
-        this.mainPanel.setLayout(new DynamicGridLayout(0, 1, 0, 5));
+        this.mainPanel.setLayout(new GridLayout(0, 1, 0, 5));
         this.mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JPanel northPanel = new JPanel();
-        northPanel.setLayout(new BorderLayout());
+        ScrollablePanel northPanel = new ScrollablePanel(new BorderLayout());
+//        northPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
+        northPanel.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
+        northPanel.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
+        northPanel.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
+        northPanel.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
         northPanel.add(this.mainPanel, BorderLayout.NORTH);
         JButton btn = new JButton("reload");
         btn.addActionListener((ev) -> {
@@ -136,12 +144,12 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         });
         this.add(btn, BorderLayout.SOUTH);
 
-        JScrollPane scrollPane = new JScrollPane(northPanel);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        this.scrollPane = new JScrollPane(northPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 10));
         // For the horizontal rule border
-        scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
-        scrollPane.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 10, 0), new HorizontalRuleBorder(10)));
-        this.add(scrollPane, BorderLayout.CENTER);
+        this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
+        this.scrollPane.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 10, 0), new HorizontalRuleBorder(10)));
+        this.add(this.scrollPane, BorderLayout.CENTER);
 
         this.reloadList(false);
     }
@@ -176,12 +184,13 @@ public class RecommendedEquipmentPanel extends PluginPanel {
             .filter(item -> Text.matchesSearchTerms(SPLITTER.split(text.toLowerCase()), Lists.newArrayList(SPLITTER.split(item.getActivity().getName().toLowerCase()))))
             .forEach(this.mainPanel::add);
         this.revalidate();
-//        Util.runWithLAF(() -> {
-//            this.mainPanel.add(new ActivityListItem(new Activity("Abyssal Sire", "Slayer", false)));
-//            this.mainPanel.add(new ActivityListItem(new Activity("Alchemical Hydra", "Slayer", false)));
-//            this.mainPanel.add(new ActivityListItem(new Activity("Jad", "Minigame", true)));
-//            this.mainPanel.add(new ActivityListItem(new Activity("Zalcano", "Skilling", false)));
-//        });
+        SwingUtilities.invokeLater(() -> {
+            if (this.scrollPane.getVerticalScrollBar().isVisible()) {
+                this.scrollPane.setViewportBorder(VIEWPORT_BORDER);
+            } else {
+                this.scrollPane.setViewportBorder(null);
+            }
+        });
     }
 
     @Override

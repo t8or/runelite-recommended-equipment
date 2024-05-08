@@ -1,16 +1,12 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +22,7 @@ public class RecEquipClient {
             .addInterceptor(new CacheInterceptor(15))
             .build();
         this.gson = gson.newBuilder()
-            .registerTypeAdapter(Activity.class, new ActivityDeserializer())
-//            .registerTypeAdapter(ActivityEquipmentStyle.class, new ActivityEquipmentStyleDeserializer())
             .registerTypeAdapter(ActivitySlotTier.class, new ActivitySlotTierDeserializer())
-//            .registerTypeAdapter(ActivityItem.class, new ActivityItemDeserializer())
             .create();
     }
 
@@ -48,22 +41,7 @@ public class RecEquipClient {
                 throw new IOException("Non-OK response code: " + res.code());
             }
 
-            ArrayList<Activity> activities = new ArrayList<>();
-            JsonElement parse = new JsonParser().parse(Objects.requireNonNull(res.body()).string());
-            parse.getAsJsonObject().entrySet().forEach(entry -> {
-                String key = entry.getKey();
-                JsonElement value = entry.getValue();
-                Activity activity = this.gson.fromJson(value, Activity.class);
-                activity.setName(key);
-//                activity.setCategory("TEST");
-                activities.add(activity);
-            });
-            return activities;
-
-//            String string = Objects.requireNonNull(res.body()).string();
-//            System.out.println(string);
-//            return this.gson.fromJson(string, new TypeToken<List<Activity>>() {}.getType());
-//            ActivityAllManifest activityAllManifest = this.gson.fromJson(Objects.requireNonNull(res.body()).string(), ActivityAllManifest.class);
+            return this.gson.fromJson(Objects.requireNonNull(res.body()).string(), new TypeToken<List<Activity>>() {}.getType());
         }
     }
 
