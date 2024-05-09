@@ -6,13 +6,23 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
 public class HorizontalRuleBorder extends EtchedBorder {
+    public static final int TOP = 0;
+    public static final int BOTTOM = 1;
+    public static final int BOTH = 2;
+
     private final int size;
+    private final int sides;
     private final Border outsideBorder;
 
     public HorizontalRuleBorder(int size) {
+        this(size, BOTH);
+    }
+
+    public HorizontalRuleBorder(int size, int sides) {
         super();
         this.size = size;
-        this.outsideBorder = new EmptyBorder(this.size, 0, 0, 0);
+        this.sides = sides;
+        this.outsideBorder = new EmptyBorder(this.sides != BOTTOM ? size : 0, 0, this.sides != TOP ? size : 0, 0);
     }
 
     /**
@@ -23,7 +33,7 @@ public class HorizontalRuleBorder extends EtchedBorder {
      */
     public Insets getBorderInsets(Component c, Insets insets) {
         Insets outerInsets = this.outsideBorder.getBorderInsets(c);
-        insets.set(this.size + outerInsets.top, 0, 0, 0);
+        insets.set(this.sides != BOTTOM ? this.size + outerInsets.top : 0, 0, this.sides != TOP ? this.size + outerInsets.bottom : 0, 0);
         return insets;
     }
 
@@ -51,18 +61,30 @@ public class HorizontalRuleBorder extends EtchedBorder {
 
         nextInsets = outsideBorder.getBorderInsets(c);
         px += nextInsets.left;
-        py += nextInsets.top;
         pw = pw - nextInsets.right - nextInsets.left;
-        ph = ph - nextInsets.bottom - nextInsets.top;
 
-        g.translate(px, py);
+        // Draw top
+        if (sides != BOTTOM) {
+            py += nextInsets.top;
+            g.translate(px, py);
+            draw(c, g, pw);
+            g.translate(-px, -py);
+        }
 
+        // Draw bottom
+        if (sides != TOP) {
+            py += height - nextInsets.bottom - nextInsets.top;
+            g.translate(px, py);
+            draw(c, g, pw);
+            g.translate(-px, -py);
+        }
+    }
+
+    private void draw(Component c, Graphics g, int pw) {
         g.setColor(etchType == LOWERED? getShadowColor(c) : getHighlightColor(c));
         g.drawLine(0, 0, pw - 2, 0);
 
         g.setColor(etchType == LOWERED? getHighlightColor(c) : getShadowColor(c));
-        g.drawLine(1, 1, pw-3, 1);
-
-        g.translate(-px, -py);
+        g.drawLine(1, 1, pw -3, 1);
     }
 }

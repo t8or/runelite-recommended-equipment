@@ -45,7 +45,6 @@ public class ActivityPanel extends PluginPanel {
             stylePanel.setLayout(new GridLayout(0, 1));
             JButton selectAsActive = new JButton("Select as Active");
             selectAsActive.addActionListener(e -> {
-                System.out.println("Setting active style: " + style.getName());
                 this.plugin.setActivityEquipmentStyle(style);
                 if (this.plugin.getBankTab().isActive()) {
                     this.plugin.getBankTab().resetTab();
@@ -69,9 +68,6 @@ public class ActivityPanel extends PluginPanel {
             });
             styles.add(stylePanel);
         });
-
-//        JPanel title = new PluginTitle();
-//        topPanel.add(title, BorderLayout.NORTH);
     }
 
     @Override

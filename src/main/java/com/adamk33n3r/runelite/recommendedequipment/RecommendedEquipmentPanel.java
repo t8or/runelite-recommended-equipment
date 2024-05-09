@@ -14,7 +14,6 @@ import net.runelite.client.util.Text;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -26,21 +25,12 @@ import java.util.List;
 @Singleton
 public class RecommendedEquipmentPanel extends PluginPanel {
     @Inject
-    private RecEquipClient recEquipClient;
+    private ActivityManager activityManager;
     @Inject
     private RecommendedEquipmentPlugin plugin;
 
     @Getter
-    private final MultiplexingPluginPanel muxer = new MultiplexingPluginPanel(this) {
-        @Override
-        public void onAdd(PluginPanel p) {
-            System.out.println("onAdd:"+p);
-        }
-        @Override
-        public void onRemove(PluginPanel p) {
-            System.out.println("onRemove:"+p);
-        }
-    };
+    private final MultiplexingPluginPanel muxer = new MultiplexingPluginPanel(this);
 
     private static final EmptyBorder VIEWPORT_BORDER = new EmptyBorder(0, 0, 0, 5);
     private final List<ActivityListItem> allActivityListItems = new ArrayList<>();
@@ -112,6 +102,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         northPanel.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
         northPanel.add(this.mainPanel, BorderLayout.NORTH);
         JButton btn = new JButton("Reload");
+        Util.addStyleClass(btn, "rounded");
         btn.addActionListener((ev) -> {
             reloadList(true);
         });
@@ -121,7 +112,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 10));
         // For the horizontal rule border
         this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
-        this.scrollPane.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 10, 0), new HorizontalRuleBorder(10)));
+        this.scrollPane.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
         this.add(this.scrollPane, BorderLayout.CENTER);
 
         this.reloadList(false);
@@ -130,9 +121,10 @@ public class RecommendedEquipmentPanel extends PluginPanel {
     private void reloadList(boolean forceDownload) {
         try {
             this.allActivityListItems.clear();
-            List<Activity> activities = this.recEquipClient.downloadActivities(forceDownload);
+            List<Activity> activities = this.activityManager.getActivities(forceDownload);
             this.filterList.removeAll();
-            this.filterList.add(new JLabel("Filter list", Icons.FILTER, SwingConstants.LEFT));
+            this.filterList.add(new JLabel("Filter list", Icons.FUNNEL, SwingConstants.LEFT));
+            this.filterList.add(this.makeFilterButton("Favorite"));
             activities.stream().map(Activity::getCategory).distinct().map(this::makeFilterButton).forEach(this.filterList::add);
             activities.stream()
                 .sorted(Comparator.comparing(Activity::getName))
@@ -140,12 +132,9 @@ public class RecommendedEquipmentPanel extends PluginPanel {
                     return this.selectedCategories.isEmpty() || Arrays.stream(this.filterList.getComponents())
                         .filter(c -> c instanceof JToggleButton)
                         .map(c -> (JToggleButton) c)
-                        .anyMatch(c -> c.isSelected() && c.getText().equals(activity.getCategory()));
+                        .anyMatch(c -> c.isSelected() && (c.getText().equals("Favorite") ? activity.isFavorite() : c.getText().equals(activity.getCategory())));
                 })
-                .map((activity) -> {
-                    activity.setFavorite(this.plugin.isFavorite(activity));
-                    return new ActivityListItem(activity, this.plugin, this.muxer);
-                })
+                .map((activity) -> new ActivityListItem(activity, this.plugin, this.activityManager, this.muxer))
                 .forEach(this.allActivityListItems::add);
             this.onSearchBarChanged(this.search.getText());
         } catch (IOException e) {
@@ -165,7 +154,11 @@ public class RecommendedEquipmentPanel extends PluginPanel {
             }
             this.reloadList(false);
         });
-        Util.addStyleClass(jToggleButton, "filter");
+        if (label.equals("Favorite")) {
+            Util.addStyleClass(jToggleButton, "filter favorite-filter");
+        } else {
+            Util.addStyleClass(jToggleButton, "filter");
+        }
         return jToggleButton;
     }
 

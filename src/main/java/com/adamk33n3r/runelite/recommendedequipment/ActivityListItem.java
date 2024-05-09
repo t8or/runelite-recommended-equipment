@@ -1,28 +1,14 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.*;
-import javax.swing.plaf.ButtonUI;
-import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.plaf.metal.MetalButtonUI;
-
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.ui.FlatButtonUI;
 
 import lombok.Getter;
 import net.runelite.client.plugins.config.ConfigPlugin;
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.MultiplexingPluginPanel;
-import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.SwingUtil;
 
@@ -34,6 +20,7 @@ public class ActivityListItem extends ClickablePanel {
     private final Activity activity;
 
     private final RecommendedEquipmentPlugin plugin;
+    private final ActivityManager activityManager;
 
     static {
 		BufferedImage onStar = ImageUtil.loadImageResource(ConfigPlugin.class, "star_on.png");
@@ -46,13 +33,13 @@ public class ActivityListItem extends ClickablePanel {
 		OFF_STAR = new ImageIcon(offStar);
 	}
 
-    public ActivityListItem(Activity activity, RecommendedEquipmentPlugin plugin, MultiplexingPluginPanel muxer) {
+    public ActivityListItem(Activity activity, RecommendedEquipmentPlugin plugin, ActivityManager activityManager, MultiplexingPluginPanel muxer) {
         super(() -> {
-            System.out.println("Clicked: " + activity.getName());
             muxer.pushState(new ActivityPanel(activity, plugin, muxer));
         }, ColorScheme.DARKER_GRAY_HOVER_COLOR, ColorScheme.MEDIUM_GRAY_COLOR, ColorScheme.DARK_GRAY_COLOR);
         this.activity = activity;
         this.plugin = plugin;
+        this.activityManager = activityManager;
         Util.addStyleClass(this, "activity");
         this.setToolTipText(activity.getName());
         this.rebuild();
@@ -76,8 +63,7 @@ public class ActivityListItem extends ClickablePanel {
 		favoriteBtn.setPreferredSize(new Dimension(21, 21));
 		favoriteBtn.addActionListener(e -> {
             this.activity.setFavorite(!this.activity.isFavorite());
-            this.plugin.saveFavorites(this.activity);
-            System.out.println("Pin button clicked");
+            this.activityManager.saveFavorite(this.activity);
 		});
 
         GroupLayout layout = new GroupLayout(this);

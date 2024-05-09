@@ -86,18 +86,4 @@ public class RecommendedEquipmentPlugin extends Plugin
 	{
 		return configManager.getConfig(RecommendedEquipmentConfig.class);
 	}
-
-	public boolean isFavorite(Activity activity) {
-		return this.config.favorites().contains(activity.getName());
-	}
-
-	public void saveFavorites(Activity activity) {
-		Set<String> favorites = this.config.favorites();
-		if (activity.isFavorite()) {
-			favorites.add(activity.getName());
-		} else {
-			favorites.remove(activity.getName());
-		}
-		this.configManager.setConfiguration(RecommendedEquipmentConfig.CONFIG_GROUP, "favorites", favorites);
-	}
 }
