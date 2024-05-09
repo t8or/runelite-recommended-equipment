@@ -12,7 +12,7 @@ import java.util.List;
 public class Activity {
     private String name;
     private String category;
-    private boolean favorite;
+    private transient boolean favorite;
 
     @SerializedName("styles")
     private List<ActivityEquipmentStyle> equipmentStyles = new ArrayList<>();

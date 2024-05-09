@@ -64,6 +64,8 @@ public class ActivityEquipmentStyle {
     private List<ActivitySlotTier> ring;
     private List<ActivitySlotTier> special;
 
+    private transient boolean favorite;
+
     public List<Pair<String, List<ActivitySlotTier>>> getSlots() {
         // TODO: should probably be a scraper data change
         return List.of(
