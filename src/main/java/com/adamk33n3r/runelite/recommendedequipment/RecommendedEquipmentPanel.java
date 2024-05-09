@@ -112,8 +112,19 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 10));
         // For the horizontal rule border
         this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
-        this.scrollPane.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
-        this.add(this.scrollPane, BorderLayout.CENTER);
+//        this.scrollPane.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
+
+        JPanel wrapper = new JPanel(new BorderLayout(5, 5));
+        wrapper.add(this.scrollPane, BorderLayout.CENTER);
+        wrapper.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
+        JPanel header = new JPanel(new BorderLayout());
+        header.add(new JLabel("Choose Activity"), BorderLayout.WEST);
+//        JLabel sortLabel = new JLabel("Sort A-Z", Icons.CHEVRON_DOWN, SwingConstants.RIGHT);
+//        sortLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+//        header.add(sortLabel, BorderLayout.EAST);
+        wrapper.add(header, BorderLayout.NORTH);
+
+        this.add(wrapper, BorderLayout.CENTER);
 
         this.reloadList(false);
     }
