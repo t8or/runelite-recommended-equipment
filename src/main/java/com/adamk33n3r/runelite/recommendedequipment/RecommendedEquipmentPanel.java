@@ -92,7 +92,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         filterArea.add(this.filterList);
 
         this.mainPanel = new JPanel();
-        this.mainPanel.setLayout(new GridLayout(0, 1, 0, 5));
+        this.mainPanel.setLayout(new StretchedStackedLayout(5));
         this.mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         ScrollablePanel northPanel = new ScrollablePanel(new BorderLayout());

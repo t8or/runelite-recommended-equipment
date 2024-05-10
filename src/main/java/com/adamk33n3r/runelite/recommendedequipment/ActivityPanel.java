@@ -47,7 +47,7 @@ public class ActivityPanel extends PluginPanel {
         back.addActionListener(e -> this.muxer.popState());
         topPanel.add(back, BorderLayout.CENTER);
 
-        ScrollablePanel styles = new ScrollablePanel(new StretchedStackedLayout(3));
+        ScrollablePanel styles = new ScrollablePanel(new StretchedStackedLayout(5));
         styles.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
         styles.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
         styles.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
@@ -57,7 +57,7 @@ public class ActivityPanel extends PluginPanel {
         JPanel wrapper = new JPanel(new BorderLayout(5, 5));
         wrapper.add(scrollPane, BorderLayout.CENTER);
         wrapper.add(new JLabel("Choose Loadout"), BorderLayout.NORTH);
-        wrapper.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
+        wrapper.setBorder(new HorizontalRuleBorder(5, HorizontalRuleBorder.BOTH));
         this.add(wrapper, BorderLayout.CENTER);
 
         this.activity.getEquipmentStyles().stream()

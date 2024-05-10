@@ -79,7 +79,11 @@ public class BankTab {
 
     @Subscribe
     public void onClientTick(ClientTick clientTick) {
-        if (!bankFilterButton.isTabActive() || bankFilterButton.isHidden()) return;
+        if (this.bankFilterButton.isHidden()) return;
+
+        bankFilterButton.updateLocation();
+
+        if (!bankFilterButton.isTabActive()) return;
 
         net.runelite.api.Point mousePoint = client.getMouseCanvasPosition();
         if (fakeToRealItem.isEmpty()) {

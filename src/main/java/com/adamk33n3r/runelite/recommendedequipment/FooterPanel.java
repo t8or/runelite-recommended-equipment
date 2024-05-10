@@ -8,7 +8,7 @@ import java.awt.*;
 public class FooterPanel extends JPanel {
     public FooterPanel() {
         super();
-        this.setLayout(new GridLayout(0, 1, 4, 4));
+        this.setLayout(new GridLayout(0, 1, 8, 8));
 
         JButton howToUseButton = new JButton("How to use this plugin");
         Util.addStyleClass(howToUseButton, "rounded");

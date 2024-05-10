@@ -1,7 +1,6 @@
 package com.adamk33n3r.runelite.recommendedequipment.banktab;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.runelite.api.*;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.ComponentID;
@@ -13,7 +12,12 @@ import net.runelite.client.plugins.bank.BankSearch;
 import javax.inject.Inject;
 
 public class BankFilterButton {
-    @Getter @Setter
+    private static final String BUTTON_NAME = "Recommended\u00a0Equipment";
+    private static final int REC_BUTTON_SIZE = 25;
+    private static final int REC_BUTTON_X = 408;
+    private static final int REC_BUTTON_Y = 5;
+
+    @Getter
     private boolean tabActive = false;
     private final Client client;
     private final BankSearch bankSearch;
@@ -35,11 +39,8 @@ public class BankFilterButton {
 
         this.parent = this.client.getWidget(ComponentID.BANK_CONTAINER);
         assert this.parent != null;
-        int REC_BUTTON_SIZE = 25;
-        int REC_BUTTON_X = 408;
-        int REC_BUTTON_Y = 5;
 
-        this.backgroundWidget = this.createGraphic(this.parent, "rec-gear", SpriteID.UNKNOWN_BUTTON_SQUARE_SMALL, REC_BUTTON_SIZE, REC_BUTTON_SIZE, REC_BUTTON_X, REC_BUTTON_Y);
+        this.backgroundWidget = this.createGraphic(this.parent, BUTTON_NAME, SpriteID.UNKNOWN_BUTTON_SQUARE_SMALL, REC_BUTTON_SIZE, REC_BUTTON_SIZE, REC_BUTTON_X, REC_BUTTON_Y);
         this.backgroundWidget.setAction(1, "View tab");
         this.backgroundWidget.setOnOpListener((JavaScriptCallback) this::handleTagTab);
 
@@ -82,6 +83,33 @@ public class BankFilterButton {
         this.bankSearch.reset(true); // clear search dialog & re-layout bank for new tab
     }
 
+    public void updateLocation() {
+        if (this.parent == null) {
+            return;
+        }
+
+        boolean found = false;
+        for (Widget child : this.parent.getDynamicChildren()) {
+            if (child.isHidden() || child.getName().isBlank()) {
+                continue;
+            }
+            if ("quest-helper".equals(child.getName())) {
+                found = true;
+                this.backgroundWidget.setOriginalX(REC_BUTTON_X - 25 - 4);
+                this.iconWidget.setOriginalX(REC_BUTTON_X + 3 - 25 - 4);
+                break;
+            }
+        }
+
+        if (!found) {
+            this.backgroundWidget.setOriginalX(REC_BUTTON_X);
+            this.iconWidget.setOriginalX(REC_BUTTON_X + 3);
+        }
+
+        this.backgroundWidget.revalidate();
+        this.iconWidget.revalidate();
+    }
+
     private void handleTagTab(ScriptEvent scriptEvent) {
         if (scriptEvent.getOp() == 2) {
             this.client.setVarbit(Varbits.CURRENT_BANK_TAB, 0);
@@ -105,8 +133,9 @@ public class BankFilterButton {
         String menuOption = event.getMenuOption();
 
         // If click a base tab, close
-        boolean clickedTabTag = menuOption.startsWith("View tab") && !event.getMenuTarget().equals("rec-gear");
+        boolean clickedTabTag = menuOption.startsWith("View tab") && !event.getMenuTarget().equals(BUTTON_NAME);
         boolean clickedOtherTab = menuOption.equals("View all items") || menuOption.startsWith("View tag tab");
+        // NOTE: Without clickedTabTag, this closes the tab first, and then handleTagTab is called which reopens it
         if (this.tabActive && (clickedTabTag || clickedOtherTab)) {
             closeTab();
         }
