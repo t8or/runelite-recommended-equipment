@@ -1,5 +1,7 @@
 package com.adamk33n3r.runelite.recommendedequipment.banktab;
 
+import com.adamk33n3r.runelite.recommendedequipment.Icons;
+import com.adamk33n3r.runelite.recommendedequipment.RecommendedEquipmentPlugin;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.events.MenuOptionClicked;
@@ -7,9 +9,12 @@ import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetType;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.bank.BankSearch;
+import net.runelite.client.util.ImageUtil;
 
 import javax.inject.Inject;
+import java.awt.image.BufferedImage;
 
 public class BankFilterButton {
     private static final String BUTTON_NAME = "Recommended\u00a0Equipment";
@@ -20,14 +25,16 @@ public class BankFilterButton {
     @Getter
     private boolean tabActive = false;
     private final Client client;
+    private final ClientThread clientThread;
     private final BankSearch bankSearch;
     private Widget parent;
     private Widget backgroundWidget;
     private Widget iconWidget;
 
     @Inject
-    public BankFilterButton(Client client, BankSearch bankSearch) {
+    public BankFilterButton(Client client, ClientThread clientThread, BankSearch bankSearch) {
         this.client = client;
+        this.clientThread = clientThread;
         // Used for resetting the search
         this.bankSearch = bankSearch;
     }
@@ -44,11 +51,11 @@ public class BankFilterButton {
         this.backgroundWidget.setAction(1, "View tab");
         this.backgroundWidget.setOnOpListener((JavaScriptCallback) this::handleTagTab);
 
-        this.iconWidget = this.createGraphic(this.parent, "", SpriteID.QUESTS_PAGE_ICON_GREEN_ACHIEVEMENT_DIARIES, REC_BUTTON_SIZE - 6, REC_BUTTON_SIZE - 6, REC_BUTTON_X + 3, REC_BUTTON_Y + 3);
+        this.iconWidget = this.createGraphic(this.parent, "", RecommendedEquipmentPlugin.ICON_SPRITE_ID, REC_BUTTON_SIZE - 6, REC_BUTTON_SIZE - 6, REC_BUTTON_X + 3, REC_BUTTON_Y + 3);
 
         if (tabActive) {
             tabActive = false;
-            activateTab();
+            this.clientThread.invokeLater(this::activateTab);
         }
     }
 
@@ -189,5 +196,9 @@ public class BankFilterButton {
     public boolean isHidden() {
         Widget widget = this.client.getWidget(ComponentID.BANK_CONTAINER);
         return widget == null || widget.isHidden();
+    }
+
+    public boolean isInitialized() {
+        return this.parent != null;
     }
 }

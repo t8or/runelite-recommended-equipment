@@ -11,14 +11,16 @@ import java.util.List;
 @NoArgsConstructor
 public class Activity {
     private String name;
+    private String url;
     private String category;
     private transient boolean favorite;
 
     @SerializedName("styles")
     private List<ActivityEquipmentStyle> equipmentStyles = new ArrayList<>();
 
-    public Activity(String activityName, String category, boolean favorite) {
-        this.name = activityName;
+    public Activity(String name, String url, String category, boolean favorite) {
+        this.name = name;
+        this.url = url;
         this.category = category;
         this.favorite = favorite;
     }

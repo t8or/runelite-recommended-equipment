@@ -101,18 +101,11 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         northPanel.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
         northPanel.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
         northPanel.add(this.mainPanel, BorderLayout.NORTH);
-        JButton btn = new JButton("Reload");
-        Util.addStyleClass(btn, "rounded");
-        btn.addActionListener((ev) -> {
-            reloadList(true);
-        });
-        this.add(btn, BorderLayout.SOUTH);
 
         this.scrollPane = new JScrollPane(northPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 10));
         // For the horizontal rule border
         this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
-//        this.scrollPane.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
 
         JPanel wrapper = new JPanel(new BorderLayout(5, 5));
         wrapper.add(this.scrollPane, BorderLayout.CENTER);

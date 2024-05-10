@@ -16,20 +16,18 @@ public class ClickablePanel extends JPanel {
         this.pressed = pressed;
         this.setBackground(background);
         this.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent evt) {
                 setBackground(hover);
             }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 setBackground(background);
             }
-            public void mouseClicked(MouseEvent e) {
-                onClick.run();
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
+            public void mousePressed(MouseEvent evt) {
                 setBackground(pressed);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
+            public void mouseReleased(MouseEvent evt) {
                 setBackground(hover);
+                onClick.run();
             }
         });
     }

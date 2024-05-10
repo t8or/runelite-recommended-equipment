@@ -5,12 +5,7 @@ public class EquipmentStyleListItem extends ClickableListItem {
         super(style.getName(),
             null,
             style.isFavorite(),
-            () -> {
-                plugin.setActivityEquipmentStyle(style);
-                if (plugin.getBankTab().isActive()) {
-                    plugin.getBankTab().resetTab();
-                }
-            },
+            () -> plugin.setActivityEquipmentStyle(style),
             () -> {
                 style.setFavorite(!style.isFavorite());
                 activityManager.saveFavorite(activity);

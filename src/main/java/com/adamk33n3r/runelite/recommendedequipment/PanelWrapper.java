@@ -22,7 +22,6 @@ public class PanelWrapper extends PluginPanel {
         pluginTitle.setBorder(new EmptyBorder(0, 0, 10, 0));
         this.add(this.recommendedEquipmentPanel.getMuxer(), BorderLayout.CENTER);
         FooterPanel footerPanel = new FooterPanel();
-        footerPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
         this.add(footerPanel, BorderLayout.SOUTH);
     }
 

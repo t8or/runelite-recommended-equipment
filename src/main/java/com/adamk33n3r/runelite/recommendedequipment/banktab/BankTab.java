@@ -50,6 +50,9 @@ public class BankTab {
     private final Map<BankWidget, BankWidget> fakeToRealItem = new HashMap<>();
 
     public void startUp() {
+        if (this.recommendedEquipmentPlugin.getActivityEquipmentStyle() != null) {
+            this.clientThread.invokeLater(this.bankFilterButton::init);
+        }
     }
 
     public void shutDown() {
@@ -64,6 +67,10 @@ public class BankTab {
 
     public boolean isActive() {
         return this.bankFilterButton.isTabActive();
+    }
+
+    public boolean isInitialized() {
+        return this.bankFilterButton.isInitialized();
     }
 
     public void resetTab() {
@@ -141,11 +148,6 @@ public class BankTab {
 
     @Subscribe
     public void onScriptPostFired(ScriptPostFired event) {
-//        int SEARCHBOX_LOADED = 750;
-//        if (event.getScriptId() == SEARCHBOX_LOADED)
-//        {
-//            geButtonWidget.init();
-//        }
         if (event.getScriptId() == ScriptID.BANKMAIN_SEARCHING) {
             // The return value of bankmain_searching is on the stack. If we have a tag tab active
             // make it return true to put the bank in a searching state.

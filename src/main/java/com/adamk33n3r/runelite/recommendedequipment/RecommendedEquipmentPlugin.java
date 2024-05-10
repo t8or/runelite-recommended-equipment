@@ -12,12 +12,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.IndexedSprite;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.util.ImageUtil;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -26,8 +28,9 @@ import java.util.*;
 @PluginDescriptor(
 	name = "Recommended Equipment"
 )
-public class RecommendedEquipmentPlugin extends Plugin
-{
+public class RecommendedEquipmentPlugin extends Plugin {
+	public static final int ICON_SPRITE_ID = 0x74386F72;
+
 	@Inject
 	private Client client;
 	@Inject
@@ -44,7 +47,6 @@ public class RecommendedEquipmentPlugin extends Plugin
 	private BankTab bankTab;
 
 	@Getter
-	@Setter
 	private ActivityEquipmentStyle activityEquipmentStyle;
 
 	@Override
@@ -58,8 +60,6 @@ public class RecommendedEquipmentPlugin extends Plugin
 	protected void startUp() throws Exception {
 		this.eventBus.register(this.bankTab);
 		this.bankTab.startUp();
-		// We inject it here so that it gets the right LAF
-//		RecommendedEquipmentPanel panel = Util.runWithLAF(() -> this.injector.getInstance(RecommendedEquipmentPanel.class));
 		PanelWrapper panel = Util.runWithLAF(() -> this.injector.getInstance(PanelWrapper.class));
 		NavigationButton navButton = NavigationButton.builder()
 			.tooltip("Recommended Equipment")
@@ -68,10 +68,8 @@ public class RecommendedEquipmentPlugin extends Plugin
 			.panel(panel)
 			.build();
 		this.clientToolbar.addNavigation(navButton);
-		// TODO: Remove before release
-		SwingUtilities.invokeLater(() -> {
-			this.clientToolbar.openPanel(navButton);
-		});
+
+		this.client.getSpriteOverrides().put(ICON_SPRITE_ID, ImageUtil.getImageSpritePixels(Icons.ICON_IMG, this.client));
 	}
 
 	@Override
@@ -79,6 +77,21 @@ public class RecommendedEquipmentPlugin extends Plugin
 	{
 		this.eventBus.unregister(this.bankTab);
 		this.bankTab.shutDown();
+	}
+
+	public void setActivityEquipmentStyle(ActivityEquipmentStyle activityEquipmentStyle) {
+		this.activityEquipmentStyle = activityEquipmentStyle;
+
+		if (this.activityEquipmentStyle != null) {
+			if (!this.bankTab.isInitialized()) {
+				this.bankTab.startUp();
+			}
+			if (this.bankTab.isActive()) {
+				this.bankTab.resetTab();
+			}
+		} else {
+			this.bankTab.shutDown();
+		}
 	}
 
 	@Provides

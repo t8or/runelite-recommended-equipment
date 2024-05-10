@@ -32,10 +32,7 @@ public class ActivityPanel extends PluginPanel {
         topPanel.setLayout(new BorderLayout(0, 10));
         this.add(topPanel, BorderLayout.NORTH);
         JButton directWikiLink = new JButton("Direct Wiki Link", Icons.LINK);
-        directWikiLink.addActionListener(e -> {
-            // TODO: add this link to wiki scraped data
-            LinkBrowser.browse("https://oldschool.runescape.wiki/w/" + this.activity.getName().replace(' ', '_') + "/Strategies");
-        });
+        directWikiLink.addActionListener(e -> LinkBrowser.browse(this.activity.getUrl()));
         directWikiLink.setHorizontalTextPosition(SwingConstants.LEFT);
         Util.addStyleClass(directWikiLink, "mini");
         JPanel wikiWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -44,7 +41,10 @@ public class ActivityPanel extends PluginPanel {
         JButton back = new JButton(this.activity.getName(), Icons.CHEVRON_LEFT);
         back.setHorizontalAlignment(SwingConstants.LEFT);
         Util.addStyleClass(back, "rounded dark");
-        back.addActionListener(e -> this.muxer.popState());
+        back.addActionListener(e -> {
+            this.plugin.setActivityEquipmentStyle(null);
+            this.muxer.popState();
+        });
         topPanel.add(back, BorderLayout.CENTER);
 
         ScrollablePanel styles = new ScrollablePanel(new StretchedStackedLayout(5));
@@ -57,7 +57,7 @@ public class ActivityPanel extends PluginPanel {
         JPanel wrapper = new JPanel(new BorderLayout(5, 5));
         wrapper.add(scrollPane, BorderLayout.CENTER);
         wrapper.add(new JLabel("Choose Loadout"), BorderLayout.NORTH);
-        wrapper.setBorder(new HorizontalRuleBorder(5, HorizontalRuleBorder.BOTH));
+        wrapper.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
         this.add(wrapper, BorderLayout.CENTER);
 
         this.activity.getEquipmentStyles().stream()
