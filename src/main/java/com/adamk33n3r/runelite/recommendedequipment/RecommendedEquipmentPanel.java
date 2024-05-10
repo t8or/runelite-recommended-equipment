@@ -40,7 +40,8 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 
     private static final Splitter SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
     private JPanel filterList;
-    private Set<String> selectedCategories = new HashSet<>();
+    private final Set<String> selectedCategories = new HashSet<>();
+    private List<Activity> activities;
 
     public RecommendedEquipmentPanel() {
         super(false);
@@ -119,13 +120,19 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 
         this.add(wrapper, BorderLayout.CENTER);
 
-        this.reloadList(false);
+        this.reloadList(true);
     }
 
-    private void reloadList(boolean forceDownload) {
+    private void reloadList(boolean fetch) {
+        this.reloadList(fetch, false);
+    }
+
+    private void reloadList(boolean fetch, boolean forceDownload) {
         try {
             this.allActivityListItems.clear();
-            List<Activity> activities = this.activityManager.getActivities(forceDownload);
+            if (fetch) {
+                this.activities = this.activityManager.getActivities(forceDownload);
+            }
             this.filterList.removeAll();
             this.filterList.add(new JLabel("Filter list", Icons.FUNNEL, SwingConstants.LEFT));
             this.filterList.add(this.makeFilterButton("Favorite"));

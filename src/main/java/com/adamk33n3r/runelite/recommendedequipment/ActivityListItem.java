@@ -11,7 +11,6 @@ public class ActivityListItem extends ClickableListItem {
         super(activity.getName(),
             activity.getCategory(),
             activity.isFavorite(),
-            () -> muxer.pushState(new ActivityPanel(activity, plugin, activityManager, muxer)),
             () -> {
                 activity.setFavorite(!activity.isFavorite());
                 activityManager.saveFavorite(activity);
@@ -19,5 +18,6 @@ public class ActivityListItem extends ClickableListItem {
         );
         this.activity = activity;
         this.setToolTipText(activity.getName());
+        this.setOnClick(() -> muxer.pushState(new ActivityPanel(activity, plugin, activityManager, muxer)));
     }
 }

@@ -5,14 +5,11 @@ import com.adamk33n3r.runelite.recommendedequipment.banktab.BankTab;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.swing.*;
 
 import com.google.inject.name.Names;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.IndexedSprite;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.plugins.Plugin;
@@ -37,11 +34,7 @@ public class RecommendedEquipmentPlugin extends Plugin {
 	private EventBus eventBus;
 	@Inject
 	private ClientToolbar clientToolbar;
-	@Inject
-	private ConfigManager configManager;
 
-	@Inject
-	private RecommendedEquipmentConfig config;
 	@Inject
 	@Getter
 	private BankTab bankTab;
@@ -53,7 +46,6 @@ public class RecommendedEquipmentPlugin extends Plugin {
 	public void configure(Binder binder) {
 		Properties properties = RecommendedEquipmentProperties.getProperties();
 		Names.bindProperties(binder, properties);
-//		binder.bind(WatchdogMuxer.class).toProvider(() -> this.panel.getMuxer());
 	}
 
 	@Override

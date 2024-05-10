@@ -29,8 +29,8 @@ public class ClickableListItem extends ClickablePanel {
     private final boolean isFavorite;
     private final Runnable onFavorite;
 
-    public ClickableListItem(String text, String subtext, boolean isFavorite, Runnable onClick, Runnable onFavorite) {
-        super(onClick, ColorScheme.DARKER_GRAY_HOVER_COLOR, ColorScheme.MEDIUM_GRAY_COLOR, ColorScheme.DARK_GRAY_COLOR);
+    public ClickableListItem(String text, String subtext, boolean isFavorite, Runnable onFavorite) {
+        super(ColorScheme.DARKER_GRAY_HOVER_COLOR, ColorScheme.MEDIUM_GRAY_COLOR, ColorScheme.DARK_GRAY_COLOR);
         this.text = text;
         this.subtext = subtext;
         this.isFavorite = isFavorite;

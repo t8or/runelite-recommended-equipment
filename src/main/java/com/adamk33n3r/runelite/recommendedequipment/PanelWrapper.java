@@ -5,7 +5,6 @@ import net.runelite.client.ui.laf.RuneLiteLAF;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
