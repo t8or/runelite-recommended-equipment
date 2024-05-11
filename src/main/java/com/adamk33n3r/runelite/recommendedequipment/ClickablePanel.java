@@ -17,6 +17,9 @@ public class ClickablePanel extends JPanel {
     @Setter
     private Runnable onClick;
 
+    private boolean isEntered;
+    private boolean isPressed;
+
     public ClickablePanel(Color background, Color hover, Color pressed) {
         this.background = background;
         this.hover = hover;
@@ -24,17 +27,29 @@ public class ClickablePanel extends JPanel {
         super.setBackground(this.background);
         this.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
-                ClickablePanel.super.setBackground(ClickablePanel.this.hover);
+                if (!isPressed) {
+                    ClickablePanel.super.setBackground(ClickablePanel.this.hover);
+                }
+                isEntered = true;
             }
             public void mouseExited(MouseEvent evt) {
-                ClickablePanel.super.setBackground(ClickablePanel.this.background);
+                if (!isPressed) {
+                    ClickablePanel.super.setBackground(ClickablePanel.this.background);
+                }
+                isEntered = false;
             }
             public void mousePressed(MouseEvent evt) {
                 ClickablePanel.super.setBackground(ClickablePanel.this.pressed);
+                isPressed = true;
             }
             public void mouseReleased(MouseEvent evt) {
-                ClickablePanel.super.setBackground(ClickablePanel.this.hover);
-                if (ClickablePanel.this.onClick != null) {
+                if (isEntered) {
+                    ClickablePanel.super.setBackground(ClickablePanel.this.hover);
+                } else {
+                    ClickablePanel.super.setBackground(ClickablePanel.this.background);
+                }
+                isPressed = false;
+                if (isEntered && ClickablePanel.this.onClick != null) {
                     ClickablePanel.this.onClick.run();
                 }
             }

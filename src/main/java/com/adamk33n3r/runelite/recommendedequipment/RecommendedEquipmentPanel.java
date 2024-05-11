@@ -105,7 +105,7 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 
         this.scrollPane = new JScrollPane(northPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 10));
-        // For the horizontal rule border
+        // For the scrollbar gap
         this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
 
         JPanel wrapper = new JPanel(new BorderLayout(5, 5));

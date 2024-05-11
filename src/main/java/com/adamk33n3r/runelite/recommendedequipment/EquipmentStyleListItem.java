@@ -1,11 +1,14 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
+import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
 
 public class EquipmentStyleListItem extends ClickableListItem {
-    private final RecommendedEquipmentPlugin plugin;
+    @Getter
     private final ActivityEquipmentStyle style;
+    @Getter
     private boolean selected;
+    private final RecommendedEquipmentPlugin plugin;
 
     public EquipmentStyleListItem(Activity activity, ActivityEquipmentStyle style, ActivityPanel parent, RecommendedEquipmentPlugin plugin, ActivityManager activityManager) {
         super(style.getName(), null, style.isFavorite(), () -> {
@@ -15,14 +18,7 @@ public class EquipmentStyleListItem extends ClickableListItem {
         this.plugin = plugin;
         this.style = style;
 
-        this.setOnClick(() -> {
-            if (this.selected) {
-                this.deselect(true);
-            } else {
-                parent.deselectAll(false);
-                this.select();
-            }
-        });
+        this.setOnClick(() -> parent.selectLoadout(this));
     }
 
     public void select() {

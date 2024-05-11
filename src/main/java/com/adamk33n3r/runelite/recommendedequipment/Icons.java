@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 public final class Icons {
     public static final BufferedImage ICON_IMG = ImageUtil.loadImageResource(Icons.class, "icon.png");
+    public static final ImageIcon CHEVRON_UP = new ImageIcon(ImageUtil.loadImageResource(Icons.class, "chevron-up.png"));
     public static final ImageIcon CHEVRON_DOWN = new ImageIcon(ImageUtil.loadImageResource(Icons.class, "chevron-down.png"));
     public static final ImageIcon CHEVRON_LEFT = new ImageIcon(ImageUtil.loadImageResource(Icons.class, "chevron-left.png"));
     public static final ImageIcon FUNNEL = new ImageIcon(ImageUtil.loadImageResource(Icons.class, "funnel.png"));
