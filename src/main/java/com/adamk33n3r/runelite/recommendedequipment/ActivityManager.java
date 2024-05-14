@@ -26,7 +26,7 @@ public class ActivityManager {
     public List<Activity> getActivities(boolean forceDownload) throws IOException {
         List<Activity> activities = this.client.downloadActivities(forceDownload);
         activities.forEach(activity -> {
-           this.config.favorites().stream()
+            this.config.favorites().stream()
                 .filter(f -> f.getActivity().equals(activity.getName()))
                 .findFirst()
                 .ifPresent(favorite -> {

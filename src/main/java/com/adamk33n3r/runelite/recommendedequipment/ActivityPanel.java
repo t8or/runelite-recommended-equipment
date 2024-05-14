@@ -21,6 +21,7 @@ public class ActivityPanel extends PluginPanel {
     private final RecommendedEquipmentPlugin plugin;
 
     private JPanel styles;
+    private JScrollPane scrollPane;
     private Accordion selectedLoadout;
 
     public ActivityPanel(Activity activity, RecommendedEquipmentPlugin plugin, ActivityManager activityManager, MultiplexingPluginPanel muxer) {
@@ -47,7 +48,7 @@ public class ActivityPanel extends PluginPanel {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout(0, 10));
         this.add(topPanel, BorderLayout.NORTH);
-        JButton directWikiLink = new JButton("Direct Wiki Link", Icons.LINK);
+        JButton directWikiLink = new JButton("Direct wiki link", Icons.LINK);
         directWikiLink.addActionListener(e -> LinkBrowser.browse(this.activity.getUrl()));
         directWikiLink.setHorizontalTextPosition(SwingConstants.LEFT);
         Util.addStyleClass(directWikiLink, "mini");
@@ -64,14 +65,6 @@ public class ActivityPanel extends PluginPanel {
         topPanel.add(back, BorderLayout.CENTER);
 
         this.styles = new JPanel(new StretchedStackedLayout(5));
-        JPanel wrapper = new JPanel(new BorderLayout(5, 5));
-        wrapper.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
-        this.add(wrapper, BorderLayout.CENTER);
-
-        JPanel northPanel = new JPanel(new BorderLayout(5, 5));
-        wrapper.add(northPanel, BorderLayout.NORTH);
-        northPanel.add(new JLabel("Choose Loadout"), BorderLayout.NORTH);
-        northPanel.add(this.styles, BorderLayout.CENTER);
 
         ActivityEquipmentStyle selectedStyle = this.plugin.getActivityEquipmentStyle();
         this.activity.getEquipmentStyles().stream()
@@ -85,14 +78,21 @@ public class ActivityPanel extends PluginPanel {
 
         this.selectedLoadout = new Accordion();
         this.selectedLoadout.setBorder(new EmptyBorder(5, 0, 0, 0));
-        this.selectedLoadout.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
-        this.selectedLoadout.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
-        this.selectedLoadout.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
-        this.selectedLoadout.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
-        JScrollPane scrollPane = new JScrollPane(this.selectedLoadout, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        ScrollablePanel wrapper = new ScrollablePanel(new StretchedStackedLayout(5));
+        wrapper.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
+        wrapper.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
+        wrapper.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
+        wrapper.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
+        wrapper.add(this.styles);
+        wrapper.add(this.selectedLoadout);
+
+        this.scrollPane = new JScrollPane(wrapper, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         // For the scrollbar gap
-        scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
-        wrapper.add(scrollPane, BorderLayout.CENTER);
+        this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
+        ClickableListPanel chooseLoadout = new ClickableListPanel("Choose loadout", this.scrollPane);
+        chooseLoadout.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
+        this.add(chooseLoadout, BorderLayout.CENTER);
         this.rebuildSelectedLoadout();
     }
 
@@ -118,8 +118,17 @@ public class ActivityPanel extends PluginPanel {
                 this.selectedLoadout.addSection(slot.getKey(), section);
             });
         }
+
         this.selectedLoadout.revalidate();
         this.selectedLoadout.repaint();
+
+        SwingUtilities.invokeLater(() -> {
+            if (this.scrollPane.getVerticalScrollBar().isVisible()) {
+                this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 5));
+            } else {
+                this.scrollPane.setViewportBorder(null);
+            }
+        });
     }
 
     private JPanel makeSlotSection(List<ActivitySlotTier> slotTiers) {

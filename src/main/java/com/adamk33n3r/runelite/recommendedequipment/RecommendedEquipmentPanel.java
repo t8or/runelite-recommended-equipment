@@ -96,29 +96,20 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         this.mainPanel.setLayout(new StretchedStackedLayout(5));
         this.mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        ScrollablePanel northPanel = new ScrollablePanel(new BorderLayout());
-        northPanel.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
-        northPanel.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
-        northPanel.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
-        northPanel.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
-        northPanel.add(this.mainPanel, BorderLayout.NORTH);
+        ScrollablePanel scrollablePanel = new ScrollablePanel(new BorderLayout());
+        scrollablePanel.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
+        scrollablePanel.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
+        scrollablePanel.setScrollableBlockIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
+        scrollablePanel.setScrollableUnitIncrement(SwingConstants.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 10);
+        scrollablePanel.add(this.mainPanel, BorderLayout.NORTH);
 
-        this.scrollPane = new JScrollPane(northPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.scrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 10));
+        this.scrollPane = new JScrollPane(scrollablePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         // For the scrollbar gap
         this.scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-        JPanel wrapper = new JPanel(new BorderLayout(5, 5));
-        wrapper.add(this.scrollPane, BorderLayout.CENTER);
-        wrapper.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
-        JPanel header = new JPanel(new BorderLayout());
-        header.add(new JLabel("Choose Activity"), BorderLayout.WEST);
-//        JLabel sortLabel = new JLabel("Sort A-Z", Icons.CHEVRON_DOWN, SwingConstants.RIGHT);
-//        sortLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-//        header.add(sortLabel, BorderLayout.EAST);
-        wrapper.add(header, BorderLayout.NORTH);
-
-        this.add(wrapper, BorderLayout.CENTER);
+        ClickableListPanel activityList = new ClickableListPanel("Choose activity", this.scrollPane);
+        activityList.setBorder(new HorizontalRuleBorder(10, HorizontalRuleBorder.BOTH));
+        this.add(activityList, BorderLayout.CENTER);
 
         this.reloadList(true);
     }

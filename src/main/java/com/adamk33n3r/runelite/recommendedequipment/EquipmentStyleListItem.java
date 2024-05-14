@@ -1,7 +1,6 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
 import lombok.Getter;
-import net.runelite.client.ui.ColorScheme;
 
 public class EquipmentStyleListItem extends ClickableListItem {
     @Getter
@@ -23,13 +22,13 @@ public class EquipmentStyleListItem extends ClickableListItem {
 
     public void select() {
         this.selected = true;
-        this.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        Util.addStyleClass(this, "activity selected");
         this.plugin.setActivityEquipmentStyle(this.style);
     }
 
     public void deselect(boolean setStyle) {
         this.selected = false;
-        this.setBackground(ColorScheme.DARKER_GRAY_HOVER_COLOR);
+        Util.addStyleClass(this, "activity");
         if (setStyle && this.plugin.getActivityEquipmentStyle() == this.style) {
             this.plugin.setActivityEquipmentStyle(null);
         }
