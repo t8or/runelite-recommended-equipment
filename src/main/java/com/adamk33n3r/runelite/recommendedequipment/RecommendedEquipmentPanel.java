@@ -1,5 +1,6 @@
 package com.adamk33n3r.runelite.recommendedequipment;
 
+import com.formdev.flatlaf.ui.FlatToggleButtonUI;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -60,7 +61,6 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         topPanel.add(filterArea, BorderLayout.CENTER);
 
         this.search = new IconTextField();
-        Util.addStyleClass(this.search, "rounded5");
         this.search.setIcon(IconTextField.Icon.SEARCH);
         this.search.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
         this.search.setBackground(ColorScheme.DARKER_GRAY_COLOR);
@@ -87,9 +87,8 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         this.filterList = new JPanel();
         this.filterList.setLayout(new WrapLayout(FlowLayout.LEFT, 2, 2));
         this.filterList.setBorder(new EmptyBorder(4, 4, 4, 4));
-        Util.addStyleClass(this.filterList, "rounded5");
         this.filterList.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        this.filterList.add(new JLabel("Filter list"));
+        this.filterList.add(new JLabel("Filter list", Icons.FUNNEL, SwingConstants.LEFT));
         filterArea.add(this.filterList);
 
         this.mainPanel = new JPanel();
@@ -156,10 +155,11 @@ public class RecommendedEquipmentPanel extends PluginPanel {
             }
             this.reloadList(false);
         });
+        jToggleButton.putClientProperty("JButton.buttonType", "toolBarButton");
+//        jToggleButton.setBorder(BorderFactory.createLineBorder(ColorScheme.TEXT_COLOR, 1));
+        Theme.applyStyle(jToggleButton, Theme.ButtonType.SECONDARY, Theme.ButtonSize.SMALL);
         if (label.equals("Favorite")) {
-            Util.addStyleClass(jToggleButton, "filter favorite-filter");
-        } else {
-            Util.addStyleClass(jToggleButton, "filter");
+            jToggleButton.setForeground(ColorScheme.BRAND_ORANGE);
         }
         return jToggleButton;
     }
@@ -181,12 +181,10 @@ public class RecommendedEquipmentPanel extends PluginPanel {
 
     @Override
     public void onActivate() {
-        RecEquipLAF.setup();
         this.rebuild();
     }
 
     @Override
     public void onDeactivate() {
-        RuneLiteLAF.setup();
     }
 }

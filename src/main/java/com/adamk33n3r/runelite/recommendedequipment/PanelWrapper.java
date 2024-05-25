@@ -26,13 +26,11 @@ public class PanelWrapper extends PluginPanel {
 
     @Override
     public void onActivate() {
-        RecEquipLAF.setup();
         this.recommendedEquipmentPanel.getMuxer().onActivate();
     }
 
     @Override
     public void onDeactivate() {
-        RuneLiteLAF.setup();
         this.recommendedEquipmentPanel.getMuxer().onDeactivate();
     }
 }

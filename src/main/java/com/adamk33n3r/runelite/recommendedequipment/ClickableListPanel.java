@@ -9,7 +9,7 @@ public class ClickableListPanel extends JPanel {
         super();
         this.setLayout(new BorderLayout(5, 5));
         JPanel header = new JPanel(new BorderLayout());
-        header.setBorder(new EmptyBorder(0, 10, 0, 5));
+        header.setBorder(new EmptyBorder(0, 12, 0, 5));
         header.add(new JLabel(title), BorderLayout.WEST);
 //        JLabel sortLabel = new JLabel("Sort A-Z", Icons.CHEVRON_DOWN, SwingConstants.RIGHT);
 //        sortLabel.setHorizontalTextPosition(SwingConstants.LEFT);

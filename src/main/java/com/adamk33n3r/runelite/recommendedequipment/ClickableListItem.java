@@ -6,6 +6,7 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.SwingUtil;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -35,8 +36,9 @@ public class ClickableListItem extends ClickablePanel {
         this.subtext = subtext;
         this.isFavorite = isFavorite;
         this.onFavorite = onFavorite;
-        Util.addStyleClass(this, "activity");
         this.rebuild();
+        this.setBorder(new EmptyBorder(3, 5, 3, 5));
+        Theme.applyStyle(this, Theme.PanelType.CLICKABLE);
     }
 
     public void rebuild() {

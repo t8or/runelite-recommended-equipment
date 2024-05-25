@@ -8,7 +8,9 @@ import net.runelite.client.ui.laf.RuneLiteLAF;
 import net.runelite.client.util.LinkBrowser;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -51,13 +53,15 @@ public class ActivityPanel extends PluginPanel {
         JButton directWikiLink = new JButton("Direct wiki link", Icons.LINK);
         directWikiLink.addActionListener(e -> LinkBrowser.browse(this.activity.getUrl()));
         directWikiLink.setHorizontalTextPosition(SwingConstants.LEFT);
-        Util.addStyleClass(directWikiLink, "mini");
+        Theme.applyStyle(directWikiLink, Theme.ButtonType.PRIMARY, Theme.ButtonSize.SMALL);
+
         JPanel wikiWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         wikiWrapper.add(directWikiLink);
         topPanel.add(wikiWrapper, BorderLayout.SOUTH);
         JButton back = new JButton(this.activity.getName(), Icons.CHEVRON_LEFT);
+        Theme.applyStyle(back, Theme.ButtonType.PRIMARY);
         back.setHorizontalAlignment(SwingConstants.LEFT);
-        Util.addStyleClass(back, "rounded dark");
+
         back.addActionListener(e -> {
             this.plugin.setActivityEquipmentStyle(null);
             this.muxer.popState();
@@ -140,7 +144,7 @@ public class ActivityPanel extends PluginPanel {
                 tierItem.addActionListener((ev) -> {
                     LinkBrowser.browse("https://oldschool.runescape.wiki/?title=Special%3ASearch&go=Go&search=" + URLEncoder.encode(item.getName(), Charsets.UTF_8));
                 });
-                Util.addStyleClass(tierItem, "med");
+                Theme.applyStyle(tierItem, Theme.ButtonType.PRIMARY);
                 content.add(tierItem);
             });
         });
@@ -149,12 +153,10 @@ public class ActivityPanel extends PluginPanel {
 
     @Override
     public void onActivate() {
-        RecEquipLAF.setup();
         this.rebuild();
     }
 
     @Override
     public void onDeactivate() {
-        RuneLiteLAF.setup();
     }
 }

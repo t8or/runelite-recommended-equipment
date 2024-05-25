@@ -23,7 +23,9 @@ import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Recommended Equipment"
+	name = "Recommended Equipment",
+	description = "Recommended Equipment is a plugin that will suggest the best gear for the boss you are fighting or activity you are participating in.",
+	tags = { "equipment", "gear", "boss", "pvm", "pvp", "activity" }
 )
 public class RecommendedEquipmentPlugin extends Plugin {
 	public static final int ICON_SPRITE_ID = 0x74386F72;
@@ -42,6 +44,8 @@ public class RecommendedEquipmentPlugin extends Plugin {
 	@Getter
 	private ActivityEquipmentStyle activityEquipmentStyle;
 
+	private NavigationButton navButton;
+
 	@Override
 	public void configure(Binder binder) {
 		Properties properties = RecommendedEquipmentProperties.getProperties();
@@ -52,23 +56,24 @@ public class RecommendedEquipmentPlugin extends Plugin {
 	protected void startUp() throws Exception {
 		this.eventBus.register(this.bankTab);
 		this.bankTab.startUp();
-		PanelWrapper panel = Util.runWithLAF(() -> this.injector.getInstance(PanelWrapper.class));
-		NavigationButton navButton = NavigationButton.builder()
+		PanelWrapper panel = this.injector.getInstance(PanelWrapper.class);
+		this.navButton = NavigationButton.builder()
 			.tooltip("Recommended Equipment")
 			.icon((BufferedImage) Icons.ICON.getImage())
-			.priority(1)
+			.priority(5)
 			.panel(panel)
 			.build();
-		this.clientToolbar.addNavigation(navButton);
+		this.clientToolbar.addNavigation(this.navButton);
 
 		this.client.getSpriteOverrides().put(ICON_SPRITE_ID, ImageUtil.getImageSpritePixels(Icons.ICON_IMG, this.client));
 	}
 
 	@Override
-	protected void shutDown() throws Exception
-	{
+	protected void shutDown() throws Exception {
 		this.eventBus.unregister(this.bankTab);
 		this.bankTab.shutDown();
+		this.clientToolbar.removeNavigation(this.navButton);
+		this.client.getSpriteOverrides().remove(ICON_SPRITE_ID);
 	}
 
 	public void setActivityEquipmentStyle(ActivityEquipmentStyle activityEquipmentStyle) {
