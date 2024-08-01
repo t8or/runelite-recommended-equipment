@@ -2,7 +2,7 @@
 
 
 # Recommended Equipment Runelite Plugin
-[![Plugin Hub](https://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/recommended-equipment)](https://runelite.net/plugin-hub/show/recommendedequipment) 
+[![Plugin Hub](https://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/recommended-equipment)](https://runelite.net/plugin-hub/show/recommended-equipment) 
 [![Discord](https://img.shields.io/discord/1236335814342873180.svg?color=%235865F2&label=Discord&logo=discord&logoColor=white&style=flat)](https://discord.gg/csaDnCqPKm) 
 [![Donate with Stripe](https://img.shields.io/badge/Support-Stripe-blue?logo=stripe&logoColor=white)](https://donate.stripe.com/9AQcNxadm1pL7Hq9AA)
 
