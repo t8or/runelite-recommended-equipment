@@ -49,6 +49,9 @@ With an activity and loadout selected in the plugin panel, go to your bank and c
 # Contributing 
 Are you interested in contributing to the development of this plugin? Please review the [open issues](https://github.com/t8or/runelite-recommended-equipment/issues) for needed work.
 
+For issues relating to tab name (e.g. the plugin showing `Default` instead of `Ranged`), the wiki must be edited to include a `style` tag with the name of the loadout, as shown here: ![OSRS Wiki Edit Style Example](https://github.com/user-attachments/assets/dd1a1b2e-9116-43ff-bfd9-a1d1e5ed72b7)
+
+
 # Support 
 For any questions or issues, refer to the following resources  
 **[Recommended Equipment Discord](https://discord.gg/b5vUmA7njb)**   
