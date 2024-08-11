@@ -19,7 +19,7 @@
 - Launch RuneLite
 - Click the Wrench icon on the top right of the RuneLite window
 - Click the [Plugin Hub](https://github.com/runelite/runelite/wiki/Information-about-the-Plugin-Hub) button on the right side near the top
-- Search for "![Recommended Equipment Plugin Icon](src/main/resources/com/adamk33n3r/runelite/recommendedequipment/icon.png) Recommended Equipment"
+- Search for "![Recommended Equipment Plugin Icon](icon.png) Recommended Equipment"
 - Click Install
 >Runelite is a popular free, open-source, and super fast client for Old School RuneScape
 >
@@ -27,7 +27,7 @@
 
  # Plugin usage  
  
- Once installed ![Recommended Equipment Plugin Icon](src/main/resources/com/adamk33n3r/runelite/recommendedequipment/icon.png) Recommend Equipment is on the right side of the RuneLite window, in a list of all installed Runelite plugins. Click it to open the panel. 
+ Once installed ![Recommended Equipment Plugin Icon](icon.png) Recommend Equipment is on the right side of the RuneLite window, in a list of all installed Runelite plugins. Click it to open the panel. 
 
 ![image](https://github.com/t8or/runelite-recommended-equipment/assets/17255992/9b7d7f08-1bfb-4425-8dcd-9e63158f70a9)
 
@@ -37,11 +37,11 @@
 > You can also save your favorite bosses and activities using the star icon and then filter the list using the favorite filter.
 
 Click on a boss or activity to see the available gear setups. Select one to display gear categorized by effectiveness and equipment slot in the plugin panel.
->These gear setups are pulled directly from the OSRS Wiki under the strategy section of a boss or activity. If something is missing or incorrect in the plugin, please [open an issue](https://github.com/adamk33n3r/runelite-recommended-gear/issues/new/choose)!
+>These gear setups are pulled directly from the OSRS Wiki under the strategy section of a boss or activity. If something is missing or incorrect in the plugin, please [open an issue](https://github.com/t8or/runelite-recommended-equipment/issues/new/choose)!
 
 ![image](https://github.com/t8or/runelite-recommended-equipment/assets/17255992/d85b7089-19ad-4426-a729-8c0e4e69f27f)
 
-With an activity and loadout selected in the plugin panel, go to your bank and click the ![Recommended Equipment Plugin Icon](src/main/resources/com/adamk33n3r/runelite/recommendedequipment/icon.png) 'Recommended Equipment' button to filter your bank view, showing only the gear relevant to the selected setup. 
+With an activity and loadout selected in the plugin panel, go to your bank and click the ![Recommended Equipment Plugin Icon](icon.png) 'Recommended Equipment' button to filter your bank view, showing only the gear relevant to the selected setup. 
 
 ![image](https://github.com/t8or/runelite-recommended-equipment/assets/17255992/924a29b3-28fb-4c6b-8efb-2aaf7646cddb) ![image](https://github.com/t8or/runelite-recommended-equipment/assets/17255992/fab1bfb8-05bf-4ee8-8665-979b1c872e02)
 
@@ -55,7 +55,7 @@ For issues relating to tab name (e.g. the plugin showing `Default` instead of `R
 # Support 
 For any questions or issues, refer to the following resources  
 **[Recommended Equipment Discord](https://discord.gg/b5vUmA7njb)**   
-**[Submit an Issue](https://github.com/adamk33n3r/runelite-recommended-gear/issues/new/choose)**  
+**[Submit an Issue](https://github.com/t8or/runelite-recommended-equipment/issues/new/choose)**  
 
 # Donate 
 You can support me and the plugin by donating through [this Stripe link](https://donate.stripe.com/9AQcNxadm1pL7Hq9AA)
