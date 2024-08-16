@@ -44,7 +44,7 @@ version = version+'+'+build
 
 compileJava.doFirst {
     def runTasks = gradle.startParameter.taskNames
-    if ("shadowJar" in runTasks) return
+    if ("build" !in runTasks || "runelitePluginHubPackage" in runTasks) return
     build += 1
     versionProps['VERSION_BUILD'] = build.toString()
     versionProps.store(versionPropsFile.newWriter(), null)
