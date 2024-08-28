@@ -52,6 +52,8 @@ Are you interested in contributing to the development of this plugin? Please rev
 
 For issues relating to tab name (e.g. the plugin showing `Default` instead of `Ranged`), the wiki must be edited to include a `style` tag with the name of the loadout, as shown here: ![OSRS Wiki Edit Style Example](https://github.com/user-attachments/assets/dd1a1b2e-9116-43ff-bfd9-a1d1e5ed72b7)
 
+The plugin uses a variation of the OSRS Wiki Scrapping tool to gather boss strategies, so this plugin does not hit the wiki for each request. That scrape happens every Thursday, so if there is a change made to the wiki, this plugin should have those details by the end of the following Thursday.
+
 
 # Support 
 For any questions or issues, refer to the following resources  
