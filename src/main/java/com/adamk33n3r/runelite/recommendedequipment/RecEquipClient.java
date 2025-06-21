@@ -2,6 +2,7 @@ package com.adamk33n3r.runelite.recommendedequipment;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import javax.annotation.Nonnull;
@@ -10,7 +11,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+@Slf4j
 public class RecEquipClient {
     private final OkHttpClient cachingClient;
     private final Gson gson;
@@ -26,7 +29,7 @@ public class RecEquipClient {
             .create();
     }
 
-    public List<Activity> downloadActivities(boolean forceDownload) throws IOException {
+    public void downloadActivities(boolean forceDownload, Consumer<List<Activity>> callback) throws IOException {
         HttpUrl allActivities = GITHUB.newBuilder()
             .addPathSegment("master")
             .addPathSegment("recs")
@@ -36,13 +39,28 @@ public class RecEquipClient {
         if (forceDownload) {
             reqBuilder.cacheControl(CacheControl.FORCE_NETWORK);
         }
-        try (Response res  = this.cachingClient.newCall(reqBuilder.build()).execute()) {
-            if (res.code() != 200) {
-                throw new IOException("Non-OK response code: " + res.code());
+        Request request = reqBuilder.build();
+        final Gson gson = this.gson;
+        this.cachingClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
+                log.error("Error with request at: {}", request.url(), e);
             }
 
-            return this.gson.fromJson(Objects.requireNonNull(res.body()).string(), new TypeToken<List<Activity>>() {}.getType());
-        }
+            @Override
+            public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException {
+                if (response.code() != 200) {
+                    log.error("Error with request at: {} {}", request.url(), response.body() != null ? response.body().string() : null);
+                    throw new IOException("Non-OK response code: " + response.code());
+                }
+
+                List<Activity> activities = gson.fromJson(
+                    Objects.requireNonNull(response.body()).string(),
+                    new TypeToken<List<Activity>>() {}.getType()
+                );
+                callback.accept(activities);
+            }
+        });
     }
 
     static class CacheInterceptor implements Interceptor {

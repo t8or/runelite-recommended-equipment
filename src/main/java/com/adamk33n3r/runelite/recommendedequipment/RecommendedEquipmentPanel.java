@@ -4,6 +4,7 @@ import com.formdev.flatlaf.ui.FlatToggleButtonUI;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.MultiplexingPluginPanel;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+@Slf4j
 @Singleton
 public class RecommendedEquipmentPanel extends PluginPanel {
     @Inject
@@ -121,26 +123,33 @@ public class RecommendedEquipmentPanel extends PluginPanel {
         try {
             this.allActivityListItems.clear();
             if (fetch) {
-                this.activities = this.activityManager.getActivities(forceDownload);
+                this.activityManager.getActivities(forceDownload, (activities) -> {
+                    this.activities = activities;
+                    reloadListHelper();
+                });
+            } else {
+                reloadListHelper();
             }
-            this.filterList.removeAll();
-            this.filterList.add(new JLabel("Filter list", Icons.FUNNEL, SwingConstants.LEFT));
-            this.filterList.add(this.makeFilterButton("Favorite"));
-            activities.stream().map(Activity::getCategory).distinct().map(this::makeFilterButton).forEach(this.filterList::add);
-            activities.stream()
-                .sorted(Comparator.comparing(Activity::getName))
-                .filter((activity) -> {
-                    return this.selectedCategories.isEmpty() || Arrays.stream(this.filterList.getComponents())
-                        .filter(c -> c instanceof JToggleButton)
-                        .map(c -> (JToggleButton) c)
-                        .anyMatch(c -> c.isSelected() && (c.getText().equals("Favorite") ? activity.isFavorite() : c.getText().equals(activity.getCategory())));
-                })
-                .map((activity) -> new ActivityListItem(activity, this.plugin, this.activityManager, this.muxer))
-                .forEach(this.allActivityListItems::add);
-            this.onSearchBarChanged(this.search.getText());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error downloading activities", e);
         }
+    }
+
+    private void reloadListHelper() {
+        this.filterList.removeAll();
+        this.filterList.add(new JLabel("Filter list", Icons.FUNNEL, SwingConstants.LEFT));
+        this.filterList.add(this.makeFilterButton("Favorite"));
+        activities.stream().map(Activity::getCategory).distinct().map(this::makeFilterButton).forEach(this.filterList::add);
+        activities.stream()
+            .sorted(Comparator.comparing(Activity::getName))
+            .filter((activity) -> this.selectedCategories.isEmpty() || Arrays.stream(this.filterList.getComponents())
+                .filter(c -> c instanceof JToggleButton)
+                .map(c -> (JToggleButton) c)
+                .anyMatch(c -> c.isSelected() && (c.getText().equals("Favorite") ? activity.isFavorite() : c.getText().equals(activity.getCategory())))
+            )
+            .map((activity) -> new ActivityListItem(activity, this.plugin, this.activityManager, this.muxer))
+            .forEach(this.allActivityListItems::add);
+        this.onSearchBarChanged(this.search.getText());
     }
 
     private JToggleButton makeFilterButton(String label) {

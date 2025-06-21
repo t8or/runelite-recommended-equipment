@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -23,22 +24,23 @@ public class ActivityManager {
         this.client = client;
     }
 
-    public List<Activity> getActivities(boolean forceDownload) throws IOException {
-        List<Activity> activities = this.client.downloadActivities(forceDownload);
-        activities.forEach(activity -> {
-            this.config.favorites().stream()
-                .filter(f -> f.getActivity().equals(activity.getName()))
-                .findFirst()
-                .ifPresent(favorite -> {
-                    activity.setFavorite(favorite.isFavorite());
-                    activity.getEquipmentStyles().forEach(style -> {
-                        if (favorite.getLoadouts().contains(style.getName())) {
-                            style.setFavorite(true);
-                        }
+    public void getActivities(boolean forceDownload, Consumer<List<Activity>> callback) throws IOException {
+        this.client.downloadActivities(forceDownload, (activities) -> {
+            activities.forEach(activity -> {
+                this.config.favorites().stream()
+                    .filter(f -> f.getActivity().equals(activity.getName()))
+                    .findFirst()
+                    .ifPresent(favorite -> {
+                        activity.setFavorite(favorite.isFavorite());
+                        activity.getEquipmentStyles().forEach(style -> {
+                            if (favorite.getLoadouts().contains(style.getName())) {
+                                style.setFavorite(true);
+                            }
+                        });
                     });
-                });
+            });
+            callback.accept(activities);
         });
-        return activities;
     }
 
     public void saveFavorite(Activity activity) {
