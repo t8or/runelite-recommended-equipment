@@ -8,37 +8,37 @@
 [![Donate with Stripe](https://img.shields.io/badge/Support-Stripe-blue?logo=stripe&logoColor=white)](https://donate.stripe.com/9AQcNxadm1pL7Hq9AA)
 
 
-> This awesome plugin takes your OSRS gameplay to the next level by seamlessly integrating equipment recommendations from the wiki directly into your RuneLite client and then filtering your bank.
+> This plugin takes your OSRS gameplay to the next level by integrating recommended boss-and-activity gear from the OSRS Wiki directly into your RuneLite client.
 >
-> It helps you gear up quickly for bossing and mini-games by using wiki data without ever leaving RuneLite.
+> Filter your bank to show only the items you need. No more must you flip between OSRS and the Wiki to look up gear.
 
 
 
 # How to install
 
-- Download RuneLite from their website: https://runelite.net
+- Download and install RuneLite from https://runelite.net
 - Launch RuneLite
 - Click the Wrench icon on the top right of the RuneLite window
-- Click the [Plugin Hub](https://github.com/runelite/runelite/wiki/Information-about-the-Plugin-Hub) button on the right side near the top
+- Select [Plugin Hub](https://github.com/runelite/runelite/wiki/Information-about-the-Plugin-Hub)
 - Search for "![Recommended Equipment Plugin Icon](icon.png) Recommended Equipment"
 - Click Install
->Runelite is a popular free, open-source, and super fast client for Old School RuneScape
->
->The Plugin Hub is a repository of plugins created and maintained by community members not officially affiliated with RuneLite. RuneLite developers verify these plugins to ensure they comply with Jagex's third-party client rules and are not malicious in any other way.
+>**Note:** RuneLite is a free, open-source, and high-performance client for Old School RuneScape.  
+> 
+> The Plugin Hub hosts community-created plugins. Each one is verified by the RuneLite team to comply with Jagex’s third-party client rules.
 
  # Plugin usage  
  
- Once installed ![Recommended Equipment Plugin Icon](icon.png) Recommend Equipment is on the right side of the RuneLite window, in a list of all installed Runelite plugins. Click it to open the panel. 
+ Open ![Recommended Equipment Plugin Icon](icon.png) panel from the right-hand plugin list. 
 
 ![image](https://github.com/t8or/runelite-recommended-equipment/assets/17255992/9b7d7f08-1bfb-4425-8dcd-9e63158f70a9)
 
 
-> Use the search bar and filters to find a boss or activity.
+> Use the search bar or filters to find a boss or activity.
 >
-> You can also save your favorite bosses and activities using the star icon and then filter the list using the favorite filter.
+> You can also save your favorite bosses and activities using the star icon.
 
-Click on a boss or activity to see the available gear setups. Select one to display gear categorized by effectiveness and equipment slot in the plugin panel.
->These gear setups are pulled directly from the OSRS Wiki under the strategy section of a boss or activity. If something is missing or incorrect in the plugin, please [open an issue](https://github.com/t8or/runelite-recommended-equipment/issues/new/choose)!
+Select a boss or activity to view the available gear setups, organized in the same way as the wiki, by equipment slot and effectiveness.
+>These gear setups are pulled directly from the OSRS Wiki under the strategy section of a boss or activity. If you spot missing or incorrect gear, please [open an issue](https://github.com/t8or/runelite-recommended-equipment/issues/new/choose)!
 
 ![image](https://github.com/t8or/runelite-recommended-equipment/assets/17255992/d85b7089-19ad-4426-a729-8c0e4e69f27f)
 
@@ -48,12 +48,13 @@ With an activity and loadout selected in the plugin panel, go to your bank and c
 
 
 # Contributing 
-Are you interested in contributing to the development of this plugin? Please review the [open issues](https://github.com/t8or/runelite-recommended-equipment/issues) for needed work.
+Interested in improving this plugin? Please review the [open issues](https://github.com/t8or/runelite-recommended-equipment/issues) for needed work.
 
 For issues relating to tab name (e.g. the plugin showing `Default` instead of `Ranged`), the wiki must be edited to include a `style` tag with the name of the loadout, as shown here: ![OSRS Wiki Edit Style Example](https://github.com/user-attachments/assets/dd1a1b2e-9116-43ff-bfd9-a1d1e5ed72b7)
 
 The plugin uses a variation of the OSRS Wiki Scrapping tool to gather boss strategies, so this plugin does not hit the wiki for each request. That scrape happens every Thursday, so if there is a change made to the wiki, this plugin should have those details by the end of the following Thursday.
 
+We welcome pull requests, feature ideas, and bug reports!
 
 # Support 
 For any questions or issues, refer to the following resources  
